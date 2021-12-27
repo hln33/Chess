@@ -46,9 +46,16 @@ public class Board extends JPanel implements ActionListener {
     // returns true if we are able to add highlighting, false o.w
     private void addHighlighting(Tile selectedTile) {
         validMoves = selectedTile.getPiece().getAvailable_moves();
+
+        if (selectedTile.getPiece() instanceof King) {
+            removeCheckedMoves((King) selectedTile.getPiece());
+        }
+
         for (Tile validMove : validMoves) {
             validMove.setBackground(Color.CYAN);
         }
+
+
     }
     // remove highlighting and listeners from valid moves
     private void removeHighlighting() {
@@ -59,6 +66,19 @@ public class Board extends JPanel implements ActionListener {
         validMoves = new ArrayList<>();
     }
 
+    // removes any moves from the valid move list that would cause a king to go checked
+    private void removeCheckedMoves(King king) {
+        for (Tile move : king.getAvailable_moves()) {
+            int X = move.getCoordinates().width;
+            int Y = move.getCoordinates().height;
+            for (Piece piece : pieceList) {
+                if (piece == king || piece.getColor() == king.getColor()) continue;
+                if (piece.getAvailable_moves().contains(tiles[X][Y])) {
+                    validMoves.remove(tiles[X][Y]);
+                }
+            }
+        }
+    }
     // add pieces to board
     private void movePiece(Tile chosenTile) {
         Piece selectedPiece = selectedTile.getPiece();

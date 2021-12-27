@@ -5,27 +5,15 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class King extends Piece {
+    boolean flag = false;
     public King(Board board, Dimension dimension, piece_color color) {
         super(board, dimension, color);
         this.name = "King";
     }
 
-    // return true if a move does not cause king to go into check
-    private boolean checkIfCheck(int X, int Y) {
-        ArrayList<Piece> pieceList = this.parent_board.getPieceList();
-        Tile[][] tiles = this.getParent_board().getTiles();
-
-        for (Piece piece : pieceList) {
-            // if a piece is a king then this loop becomes infinite because checkIfCheck will be called infinite times
-            if (!(piece instanceof King) && piece.getColor() != this.color && piece.getAvailable_moves().contains(tiles[X][Y])) {
-                return false;
-            }
-        }
-        return true;
-    }
     @Override
     protected boolean checkAndAddMove(int X, int Y, Tile[][] tiles) {
-        if (checkBounds(X, Y, tiles) && checkIfCheck(X, Y)) {
+        if (checkBounds(X, Y, tiles)) {
             Tile newTile = tiles[X][Y];
             this.available_moves.add(newTile);
             return newTile.getPiece() == null || this.color == newTile.getPiece().color;
