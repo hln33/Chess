@@ -94,7 +94,7 @@ public class Board extends JPanel implements ActionListener {
         }
 
         for (King king : kings) {
-            if (!king.getChecked()) {
+            if (king.getChecked()) {
                 king.setChecked(false);
             }
         }
@@ -107,8 +107,6 @@ public class Board extends JPanel implements ActionListener {
         chosenTile.setPiece(selectedPiece);
         selectedTile.removePiece();
         selectedTile.setBackground(selectedTile.getColor());
-
-        checkIfChecked();
     }
     private void removePieceFromGame(Tile chosenTile) {
         if (chosenTile.getPiece() == null) return;
@@ -213,26 +211,32 @@ public class Board extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         Tile clickedTile = (Tile)e.getSource();
+        boolean checked = (kings[0].getChecked() || kings[1].getChecked());
 
         // if a piece has yet to be selected
         if (!selected && clickedTile.getPiece() != null) {
+            // if king is checked, then only the king is able to move
+            if (checked && !(clickedTile.getPiece() instanceof King)) return;
             if (whiteTurn && clickedTile.getPiece().getColor() == piece_color.white) {
-                selectedTile = clickedTile;
                 addHighlighting(clickedTile);
             }
             if (!whiteTurn && clickedTile.getPiece().getColor() == piece_color.black) {
-                selectedTile = clickedTile;
                 addHighlighting(clickedTile);
             }
+            selectedTile = clickedTile;
             selected = validMoves.size() != 0;
         }
         // if a piece has previously been selected
         else if (selected) {
+            if (checked && !(selectedTile.getPiece() instanceof King)) {
+                removeHighlighting();
+                selected = false;
+            }
             // move piece to tile if clicked tile was a valid move
             if (validMoves.contains(clickedTile)) {
                 removePieceFromGame(clickedTile);
                 movePiece(clickedTile);
-                // check if move caused a king to go into check
+                checkIfChecked();
                 whiteTurn = !whiteTurn;
             }
             removeHighlighting();
