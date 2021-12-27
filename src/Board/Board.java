@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+// when a game is in a checked state, another piece (other than the king) can be moved to stop the check
+
 public class Board extends JPanel implements ActionListener {
     ArrayList<Piece> pieceList = new ArrayList<>();
     King[] kings = new King[2];
@@ -13,6 +15,7 @@ public class Board extends JPanel implements ActionListener {
     Tile[][] tiles = new Tile[8][8];
     Tile selectedTile;
     boolean selected = false;
+    boolean checked;
     boolean whiteTurn = true;
 
     // set up board
@@ -43,9 +46,15 @@ public class Board extends JPanel implements ActionListener {
     // add highlighting and listeners to valid moves
     // returns true if we are able to add highlighting, false o.w
     private void addHighlighting(Piece selectedPiece) {
+        checked = (kings[0].Checked() || kings[1].Checked());
         validMoves = selectedPiece.getAvailable_moves();
+
         if (selectedPiece instanceof King) {
             removeCheckedMoves((King) selectedPiece);
+        }
+        if (checked) {
+            // remove all valid moves except those that would block a check
+            validMoves = checkIfBlockCheck(selectedPiece);
         }
 
         for (Tile validMove : validMoves) {
@@ -57,8 +66,6 @@ public class Board extends JPanel implements ActionListener {
         for (Tile validMove : validMoves) {
             validMove.setBackground(validMove.getColor());
         }
-        // clear valid move arrayList
-        validMoves = new ArrayList<>();
     }
 
     // removes any moves from the valid move list that would cause a king to go checked
@@ -76,7 +83,7 @@ public class Board extends JPanel implements ActionListener {
         }
     }
     // check if a move caused a king to go checked
-    private void checkIfChecked() {
+    private boolean checkIfChecked() {
         for (King king : kings) {
             int X = king.getCoordinates().width;
             int Y = king.getCoordinates().height;
@@ -87,7 +94,7 @@ public class Board extends JPanel implements ActionListener {
                 if (piece.getAvailable_moves().contains(kingTile)) {
                     kingTile.setBackground(Color.RED);
                     king.setChecked(true);
-                    return;
+                    return true;
                 }
             }
         }
@@ -96,8 +103,33 @@ public class Board extends JPanel implements ActionListener {
         for (King king : kings) {
             king.setChecked(false);
         }
+        return false;
     }
-    // add pieces to board
+    // returns list of tiles that would block a check (will only be called if a game is in checked state)
+    private ArrayList<Tile> checkIfBlockCheck(Piece selectedPiece) {
+        int X = selectedPiece.getCoordinates().width;
+        int Y = selectedPiece.getCoordinates().height;
+        Tile originalTile = tiles[X][Y];
+        ArrayList<Tile> newMoves = new ArrayList<>();
+
+        for (Tile validMove : validMoves) {
+            validMove.setPiece(selectedPiece);
+            selectedPiece.setCoordinates(new Dimension(validMove.getCoordinates().width, validMove.getCoordinates().height));
+            originalTile.removePiece();
+
+            if (!checkIfChecked()) {
+                newMoves.add(validMove);
+            }
+
+            originalTile.setPiece(selectedPiece);
+            selectedPiece.setCoordinates(new Dimension(X, Y));
+            validMove.removePiece();
+        }
+
+        checkIfChecked();
+        return newMoves;
+    }
+
     private void movePiece(Tile chosenTile) {
         Piece selectedPiece = selectedTile.getPiece();
         Dimension newCoordinates = chosenTile.getCoordinates();
@@ -210,13 +242,11 @@ public class Board extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         Tile clickedTile = (Tile)e.getSource();
-        boolean checked = (kings[0].Checked() || kings[1].Checked());
 
         // if a piece has yet to be selected
         if (!selected && clickedTile.getPiece() != null) {
             Piece clickedPiece = clickedTile.getPiece();
-            // if king is checked, then user can only select a king
-            if (checked && !(clickedPiece instanceof King)) return;
+            // if king is checked, then user can only select a king or another piece to block a check
 
             if (whiteTurn && clickedPiece.getColor() == piece_color.white) {
                 addHighlighting(clickedPiece);
@@ -229,9 +259,8 @@ public class Board extends JPanel implements ActionListener {
         }
         // if a piece has previously been selected
         else if (selected) {
-            boolean checkedState = checked && !(selectedTile.getPiece() instanceof King);
             // move piece to tile if clicked tile was a valid move
-            if (validMoves.contains(clickedTile) && !(checkedState)) {
+            if (validMoves.contains(clickedTile)) {
                 removePieceFromGame(clickedTile);
                 movePiece(clickedTile);
                 checkIfChecked();
