@@ -19,23 +19,12 @@ public class King extends Piece {
     }
 
     @Override
-    protected boolean checkAndAddMove(int X, int Y, Tile[][] tiles) {
-        if (checkBounds(X, Y, tiles)) {
-            Tile newTile = tiles[X][Y];
-            this.available_moves.add(newTile);
-            return newTile.getPiece() == null || this.color == newTile.getPiece().color;
-        }
-        return false;
-    }
-    @Override
     public ArrayList<Tile> getAvailable_moves() {
         this.available_moves = new ArrayList<>();
         Tile[][] tiles = this.getParent_board().getTiles();
         int x = getCoordinates().width;
         int y = getCoordinates().height;
         int newX, newY;
-
-        // if move causes king to go into check, it is not valid
 
         // down
         newX = x + 1;
