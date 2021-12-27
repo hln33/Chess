@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 public class Board extends JPanel implements ActionListener {
     ArrayList<Piece> pieceList = new ArrayList<>();
+    King[] kings = new King[2];
     ArrayList<Tile> validMoves = new ArrayList<>();
     Tile[][] tiles = new Tile[8][8];
     Tile selectedTile;
@@ -46,7 +47,6 @@ public class Board extends JPanel implements ActionListener {
     // returns true if we are able to add highlighting, false o.w
     private void addHighlighting(Tile selectedTile) {
         validMoves = selectedTile.getPiece().getAvailable_moves();
-
         if (selectedTile.getPiece() instanceof King) {
             removeCheckedMoves((King) selectedTile.getPiece());
         }
@@ -54,8 +54,6 @@ public class Board extends JPanel implements ActionListener {
         for (Tile validMove : validMoves) {
             validMove.setBackground(Color.CYAN);
         }
-
-
     }
     // remove highlighting and listeners from valid moves
     private void removeHighlighting() {
@@ -79,6 +77,28 @@ public class Board extends JPanel implements ActionListener {
             }
         }
     }
+    // check if a move caused a king to go checked
+    private void checkIfChecked() {
+        for (King king : kings) {
+            int X = king.getCoordinates().width;
+            int Y = king.getCoordinates().height;
+            Tile kingTile = tiles[X][Y];
+            for (Piece piece : pieceList) {
+                if (piece instanceof King || piece.getColor() == king.getColor()) continue;
+                if (piece.getAvailable_moves().contains(kingTile)) {
+                    kingTile.setBackground(Color.RED);
+                    king.setChecked(true);
+                    return;
+                }
+            }
+        }
+
+        for (King king : kings) {
+            if (!king.getChecked()) {
+                king.setChecked(false);
+            }
+        }
+    }
     // add pieces to board
     private void movePiece(Tile chosenTile) {
         Piece selectedPiece = selectedTile.getPiece();
@@ -86,7 +106,9 @@ public class Board extends JPanel implements ActionListener {
         selectedPiece.setCoordinates(newCoordinates);
         chosenTile.setPiece(selectedPiece);
         selectedTile.removePiece();
-        System.out.println(pieceList);
+        selectedTile.setBackground(selectedTile.getColor());
+
+        checkIfChecked();
     }
     private void removePieceFromGame(Tile chosenTile) {
         if (chosenTile.getPiece() == null) return;
@@ -170,10 +192,12 @@ public class Board extends JPanel implements ActionListener {
         King newKing;
         // black king
         newKing = new King(this, new Dimension(0, 3), piece_color.black);
+        kings[1] = newKing;
         addPieceToGame(newKing);
 
         // white king
         newKing = new King(this, new Dimension(7, 3), piece_color.white);
+        kings[0] = newKing;
         addPieceToGame(newKing);
     }
     private void addPieces() {

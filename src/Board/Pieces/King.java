@@ -5,10 +5,17 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class King extends Piece {
-    boolean flag = false;
+    boolean checked = false;
     public King(Board board, Dimension dimension, piece_color color) {
         super(board, dimension, color);
         this.name = "King";
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
+    public boolean getChecked() {
+        return this.checked;
     }
 
     @Override
@@ -20,7 +27,6 @@ public class King extends Piece {
         }
         return false;
     }
-
     @Override
     public ArrayList<Tile> getAvailable_moves() {
         this.available_moves = new ArrayList<>();
