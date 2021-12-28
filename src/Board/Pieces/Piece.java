@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public abstract class Piece {
     protected final Board parent_board;
-    private Dimension coordinates;
+    protected Tile location;
     protected ArrayList<Tile> available_moves;
     protected String name;
     piece_color color;
@@ -29,9 +29,9 @@ public abstract class Piece {
         return false;
     }
 
-    Piece(Board board, Dimension coordinates, piece_color color) {
+    Piece(Board board, Tile location, piece_color color) {
         this.parent_board = board;
-        this.coordinates = coordinates;
+        this.location = location;
         this.color = color;
     }
 
@@ -42,11 +42,11 @@ public abstract class Piece {
         return this.color;
     }
 
-    public void setCoordinates(Dimension newCoordinates) {
-        this.coordinates = newCoordinates;
+    public void setLocation(Tile newLocation) {
+        this.location = newLocation;
     }
-    public Dimension getCoordinates() {
-        return this.coordinates;
+    public Tile getLocation() {
+        return this.location;
     }
 
     public abstract ArrayList<Tile> getAvailable_moves();

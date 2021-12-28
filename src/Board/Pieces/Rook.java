@@ -5,8 +5,8 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class Rook extends Piece {
-    public Rook(Board board, Dimension dimension, piece_color color) {
-        super(board, dimension, color);
+    public Rook(Board board, Tile location, piece_color color) {
+        super(board, location, color);
         this.name = "R";
     }
 
@@ -14,8 +14,8 @@ public class Rook extends Piece {
     public ArrayList<Tile> getAvailable_moves() {
         this.available_moves = new ArrayList<>();
         Tile[][] tiles = this.getParent_board().getTiles();
-        int x = getCoordinates().width;
-        int y = getCoordinates().height;
+        int x = this.location.getCoordinates().width;
+        int y = this.location.getCoordinates().height;
         int newX, newY;
 
         // up

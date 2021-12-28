@@ -7,8 +7,8 @@ import java.util.ArrayList;
 public class Pawn extends Piece {
     boolean unmoved = true;
 
-    public Pawn(Board board, Dimension dimension, piece_color color) {
-        super(board, dimension, color);
+    public Pawn(Board board, Tile location, piece_color color) {
+        super(board, location, color);
         this.name = "p";
     }
 
@@ -17,8 +17,8 @@ public class Pawn extends Piece {
         this.available_moves = new ArrayList<>();
         Tile[][] tiles = this.getParent_board().getTiles();
         Tile candidate;
-        int x = getCoordinates().width;
-        int y = getCoordinates().height;
+        int x = this.location.getCoordinates().width;
+        int y = this.location.getCoordinates().height;
         int direction = (this.color == piece_color.black) ? 1 : -1;
         int newX, newY;
 
@@ -53,8 +53,8 @@ public class Pawn extends Piece {
     }
 
     @Override
-    public void setCoordinates(Dimension newCoordinates) {
-        super.setCoordinates(newCoordinates);
+    public void setLocation(Tile newLocation) {
+        super.setLocation(newLocation);
         unmoved = false;
     }
 }

@@ -8,7 +8,8 @@ import java.util.ArrayList;
 
 // TO-DO: (descending importantance)
 // 1. clean up code
-// 2. prevent a piece (ANY KIND) from moving if it would cause their king to become checked
+// 2. fix bugs (especially checkIfBlockCheck function)
+// 3. prevent a piece (ANY KIND) from moving if it would cause their king to become checked
 
 public class Board extends JPanel implements ActionListener {
     ArrayList<Piece> pieceList = new ArrayList<>();
@@ -87,9 +88,7 @@ public class Board extends JPanel implements ActionListener {
     // check if a move caused a king to go checked
     private boolean checkIfChecked() {
         for (King king : kings) {
-            int X = king.getCoordinates().width;
-            int Y = king.getCoordinates().height;
-            Tile kingTile = tiles[X][Y];
+            Tile kingTile = king.getLocation();
 
             for (Piece piece : pieceList) {
                 if (piece instanceof King || piece.getColor() == king.getColor()) continue;
@@ -103,9 +102,7 @@ public class Board extends JPanel implements ActionListener {
 
         // if we made it here then no kings are checked
         for (King king : kings) {
-            int X = king.getCoordinates().width;
-            int Y = king.getCoordinates().height;
-            Tile kingTile = tiles[X][Y];
+            Tile kingTile = king.getLocation();
 
             kingTile.setBackground(kingTile.getColor());
             king.setChecked(false);
@@ -114,34 +111,14 @@ public class Board extends JPanel implements ActionListener {
     }
     // returns list of tiles that would block a check (will only be called if a game is in checked state)
     private ArrayList<Tile> checkIfBlockCheck(Piece selectedPiece) {
-        int X = selectedPiece.getCoordinates().width;
-        int Y = selectedPiece.getCoordinates().height;
-        Tile originalTile = tiles[X][Y];
-        ArrayList<Tile> newMoves = new ArrayList<>();
 
-        for (Tile validMove : validMoves) {
-            validMove.setPiece(selectedPiece);
-            selectedPiece.setCoordinates(new Dimension(validMove.getCoordinates().width, validMove.getCoordinates().height));
-            originalTile.removePiece();
-
-            if (!checkIfChecked()) {
-                newMoves.add(validMove);
-            }
-
-            originalTile.setPiece(selectedPiece);
-            selectedPiece.setCoordinates(new Dimension(X, Y));
-            validMove.removePiece();
-        }
-
-        checkIfChecked();
-        return newMoves;
+        return validMoves;
     }
 
     private void movePiece(Tile chosenTile) {
         Piece selectedPiece = selectedTile.getPiece();
-        Dimension newCoordinates = chosenTile.getCoordinates();
 
-        selectedPiece.setCoordinates(newCoordinates);
+        selectedPiece.setLocation(chosenTile);
         chosenTile.setPiece(selectedPiece);
         selectedTile.removePiece();
         selectedTile.setBackground(selectedTile.getColor());
@@ -152,10 +129,7 @@ public class Board extends JPanel implements ActionListener {
         pieceList.remove(eliminatedPiece);
     }
     private void addPieceToGame(Piece newPiece) {
-        int x = newPiece.getCoordinates().width;
-        int y = newPiece.getCoordinates().height;
-
-        Tile tile = tiles[x][y];
+        Tile tile = newPiece.getLocation();
         tile.setPiece(newPiece);
         pieceList.add(newPiece);
     }
@@ -163,76 +137,76 @@ public class Board extends JPanel implements ActionListener {
         Pawn newPawn;
         // black pawns
         for (int col = 0; col < 8; ++col) {
-            newPawn = new Pawn(this, new Dimension(1, col), piece_color.black);
+            newPawn = new Pawn(this, tiles[1][col], piece_color.black);
             addPieceToGame(newPawn);
         }
         // white pawns
         for (int col = 0; col < 8; ++col) {
-            newPawn = new Pawn(this, new Dimension(6, col), piece_color.white);
+            newPawn = new Pawn(this, tiles[6][col], piece_color.white);
             addPieceToGame(newPawn);
         }
     }
     private void addRooks() {
         Rook newRook;
         // black rooks
-        newRook = new Rook(this, new Dimension(0, 0), piece_color.black);
+        newRook = new Rook(this, tiles[0][0], piece_color.black);
         addPieceToGame(newRook);
-        newRook = new Rook(this, new Dimension(0, 7), piece_color.black);
+        newRook = new Rook(this, tiles[0][7], piece_color.black);
         addPieceToGame(newRook);
 
         // white rooks
-        newRook = new Rook(this, new Dimension(7, 0), piece_color.white);
+        newRook = new Rook(this, tiles[7][0], piece_color.white);
         addPieceToGame(newRook);
-        newRook = new Rook(this, new Dimension(7, 7), piece_color.white);
+        newRook = new Rook(this, tiles[7][7], piece_color.white);
         addPieceToGame(newRook);
     }
     private void addKnights() {
         Knight newKnight;
         // black knights
-        newKnight = new Knight(this, new Dimension(0, 1), piece_color.black);
+        newKnight = new Knight(this, tiles[0][1], piece_color.black);
         addPieceToGame(newKnight);
-        newKnight = new Knight(this, new Dimension(0, 6), piece_color.black);
+        newKnight = new Knight(this, tiles[0][6], piece_color.black);
         addPieceToGame(newKnight);
 
         // white knights
-        newKnight = new Knight(this, new Dimension(7, 1), piece_color.white);
+        newKnight = new Knight(this, tiles[7][1], piece_color.white);
         addPieceToGame(newKnight);
-        newKnight = new Knight(this, new Dimension(7, 6), piece_color.white);
+        newKnight = new Knight(this, tiles[7][6], piece_color.white);
         addPieceToGame(newKnight);
     }
     private void addBishops() {
         Bishop newBishop;
         // black bishops
-        newBishop = new Bishop(this, new Dimension(0, 2), piece_color.black);
+        newBishop = new Bishop(this, tiles[0][2], piece_color.black);
         addPieceToGame(newBishop);
-        newBishop = new Bishop(this, new Dimension(0, 5), piece_color.black);
+        newBishop = new Bishop(this, tiles[0][5], piece_color.black);
         addPieceToGame(newBishop);
 
         // white bishops
-        newBishop = new Bishop(this, new Dimension(7, 2), piece_color.white);
+        newBishop = new Bishop(this, tiles[7][2], piece_color.white);
         addPieceToGame(newBishop);
-        newBishop = new Bishop(this, new Dimension(7, 5), piece_color.white);
+        newBishop = new Bishop(this, tiles[7][5], piece_color.white);
         addPieceToGame(newBishop);
     }
     private void addQueens() {
         Queen newQueen;
         // black queen
-        newQueen = new Queen(this, new Dimension(0, 4), piece_color.black);
+        newQueen = new Queen(this, tiles[0][4], piece_color.black);
         addPieceToGame(newQueen);
 
         // white queen
-        newQueen = new Queen(this, new Dimension(7, 4), piece_color.white);
+        newQueen = new Queen(this, tiles[7][4], piece_color.white);
         addPieceToGame(newQueen);
     }
     private void addKings() {
         King newKing;
         // black king
-        newKing = new King(this, new Dimension(0, 3), piece_color.black);
+        newKing = new King(this, tiles[0][3], piece_color.black);
         kings[1] = newKing;
         addPieceToGame(newKing);
 
         // white king
-        newKing = new King(this, new Dimension(7, 3), piece_color.white);
+        newKing = new King(this, tiles[7][3], piece_color.white);
         kings[0] = newKing;
         addPieceToGame(newKing);
     }

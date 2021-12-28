@@ -6,8 +6,8 @@ import java.util.ArrayList;
 
 public class King extends Piece {
     boolean checked = false;
-    public King(Board board, Dimension dimension, piece_color color) {
-        super(board, dimension, color);
+    public King(Board board, Tile location, piece_color color) {
+        super(board, location, color);
         this.name = "King";
     }
 
@@ -22,8 +22,8 @@ public class King extends Piece {
     public ArrayList<Tile> getAvailable_moves() {
         this.available_moves = new ArrayList<>();
         Tile[][] tiles = this.getParent_board().getTiles();
-        int x = getCoordinates().width;
-        int y = getCoordinates().height;
+        int x = this.location.getCoordinates().width;
+        int y = this.location.getCoordinates().height;
         int newX, newY;
 
         // down
