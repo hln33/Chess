@@ -6,7 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-// when a game is in a checked state, another piece (other than the king) can be moved to stop the check
+// TO-DO: (descending importantance)
+// 1. clean up code
+// 2. prevent a piece (ANY KIND) from moving if it would cause their king to become checked
 
 public class Board extends JPanel implements ActionListener {
     ArrayList<Piece> pieceList = new ArrayList<>();
@@ -101,6 +103,11 @@ public class Board extends JPanel implements ActionListener {
 
         // if we made it here then no kings are checked
         for (King king : kings) {
+            int X = king.getCoordinates().width;
+            int Y = king.getCoordinates().height;
+            Tile kingTile = tiles[X][Y];
+
+            kingTile.setBackground(kingTile.getColor());
             king.setChecked(false);
         }
         return false;
@@ -245,8 +252,8 @@ public class Board extends JPanel implements ActionListener {
 
         // if a piece has yet to be selected
         if (!selected && clickedTile.getPiece() != null) {
+            validMoves = new ArrayList<>();
             Piece clickedPiece = clickedTile.getPiece();
-            // if king is checked, then user can only select a king or another piece to block a check
 
             if (whiteTurn && clickedPiece.getColor() == piece_color.white) {
                 addHighlighting(clickedPiece);
