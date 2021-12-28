@@ -49,7 +49,6 @@ public class Board extends JPanel implements ActionListener {
     // add highlighting and listeners to valid moves
     // returns true if we are able to add highlighting, false o.w
     private void addHighlighting(Piece selectedPiece) {
-        checked = (kings[0].Checked() || kings[1].Checked());
         validMoves = selectedPiece.getAvailable_moves();
 
         if (selectedPiece instanceof King) {
@@ -74,13 +73,10 @@ public class Board extends JPanel implements ActionListener {
     // removes any moves from the valid move list that would cause a king to go checked
     private void removeCheckedMoves(King king) {
         for (Tile move : king.getAvailable_moves()) {
-            int X = move.getCoordinates().width;
-            int Y = move.getCoordinates().height;
-
             for (Piece piece : pieceList) {
                 if (piece == king || piece.getColor() == king.getColor()) continue;
-                if (piece.getAvailable_moves().contains(tiles[X][Y])) {
-                    validMoves.remove(tiles[X][Y]);
+                if (piece.getAvailable_moves().contains(move)) {
+                    validMoves.remove(move);
                 }
             }
         }
@@ -223,11 +219,11 @@ public class Board extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         Tile clickedTile = (Tile)e.getSource();
+        Piece clickedPiece = clickedTile.getPiece();
 
         // if a piece has yet to be selected
-        if (!selected && clickedTile.getPiece() != null) {
+        if (!selected && clickedPiece != null) {
             validMoves = new ArrayList<>();
-            Piece clickedPiece = clickedTile.getPiece();
 
             if (whiteTurn && clickedPiece.getColor() == piece_color.white) {
                 addHighlighting(clickedPiece);
@@ -244,7 +240,7 @@ public class Board extends JPanel implements ActionListener {
             if (validMoves.contains(clickedTile)) {
                 removePieceFromGame(clickedTile);
                 movePiece(clickedTile);
-                checkIfChecked();
+                checked = checkIfChecked();
                 whiteTurn = !whiteTurn;
             }
             removeHighlighting();
