@@ -56,7 +56,7 @@ public class Board extends JPanel implements ActionListener {
         }
         if (checked) {
             // remove all valid moves except those that would block a check
-            validMoves = checkIfBlockCheck(selectedPiece);
+            validMoves = BlockCheckMoves(selectedPiece);
         }
 
         for (Tile validMove : validMoves) {
@@ -70,19 +70,8 @@ public class Board extends JPanel implements ActionListener {
         }
     }
 
-    // removes any moves from the valid move list that would cause a king to go checked
-    private void removeCheckedMoves(King king) {
-        for (Tile move : king.getAvailable_moves()) {
-            for (Piece piece : pieceList) {
-                if (piece == king || piece.getColor() == king.getColor()) continue;
-                if (piece.getAvailable_moves().contains(move)) {
-                    validMoves.remove(move);
-                }
-            }
-        }
-    }
     // check if a move caused a king to go checked
-    private boolean checkIfChecked() {
+    private boolean checked() {
         for (King king : kings) {
             Tile kingTile = king.getLocation();
 
@@ -105,8 +94,19 @@ public class Board extends JPanel implements ActionListener {
         }
         return false;
     }
+    // removes any moves from the valid move list that would cause a king to go checked
+    private void removeCheckedMoves(King king) {
+        for (Tile move : king.getAvailable_moves()) {
+            for (Piece piece : pieceList) {
+                if (piece == king || piece.getColor() == king.getColor()) continue;
+                if (piece.getAvailable_moves().contains(move)) {
+                    validMoves.remove(move);
+                }
+            }
+        }
+    }
     // returns list of tiles that would block a check (will only be called if a game is in checked state)
-    private ArrayList<Tile> checkIfBlockCheck(Piece selectedPiece) {
+    private ArrayList<Tile> BlockCheckMoves(Piece selectedPiece) {
 
         return validMoves;
     }
@@ -240,7 +240,7 @@ public class Board extends JPanel implements ActionListener {
             if (validMoves.contains(clickedTile)) {
                 removePieceFromGame(clickedTile);
                 movePiece(clickedTile);
-                checked = checkIfChecked();
+                checked = checked();
                 whiteTurn = !whiteTurn;
             }
             removeHighlighting();
