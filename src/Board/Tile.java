@@ -28,7 +28,7 @@ public class Tile extends JButton {
     }
 
     protected void setPiece(Piece piece) {
-        setText(piece.getName());
+        if (piece != null) setText(piece.getName());
         this.piece = piece;
     }
     protected void removePiece() {

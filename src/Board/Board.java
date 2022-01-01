@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 // TO-DO: (descending importantance)
 // 1. clean up code
-// 2. fix bugs (especially checkIfBlockCheck function)
+// 2. fix bugs (especially blockCheckMoves function)
 // 3. prevent a piece (ANY KIND) from moving if it would cause their king to become checked
 
 public class Board extends JPanel implements ActionListener {
@@ -107,8 +107,38 @@ public class Board extends JPanel implements ActionListener {
     }
     // returns list of tiles that would block a check (will only be called if a game is in checked state)
     private ArrayList<Tile> BlockCheckMoves(Piece selectedPiece) {
+        Tile originalTile = selectedPiece.getLocation();
+        ArrayList<Tile> blockingMoves = new ArrayList<>();
+        boolean isKing = selectedPiece instanceof King;
 
-        return validMoves;
+        // put piece on a valid tile then check if it blocked a check
+        for (Tile move : selectedPiece.getAvailable_moves()) {
+            if (isKing) selectedPiece.setLocation(move);
+
+            // account for if there is already a piece on the move tile
+            Piece enemyPiece = move.getPiece() == null ? null : move.getPiece();
+            if (enemyPiece != null) pieceList.remove(enemyPiece);
+
+            // move piece
+            originalTile.removePiece();
+            move.setPiece(selectedPiece);
+            // check if checked
+            if (!checked()) {
+                blockingMoves.add(move);
+            }
+            // move piece back to original spot
+            originalTile.setPiece(selectedPiece);
+            move.removePiece();
+
+            if (enemyPiece != null) pieceList.add(enemyPiece);
+
+            if (isKing) {
+                move.setBackground(move.getColor());
+                selectedPiece.setLocation(originalTile);
+            }
+        }
+
+        return blockingMoves;
     }
 
     private void movePiece(Tile chosenTile) {
