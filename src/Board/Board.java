@@ -51,12 +51,10 @@ public class Board extends JPanel implements ActionListener {
     private void addHighlighting(Piece selectedPiece) {
         validMoves = selectedPiece.getAvailable_moves();
 
-        if (selectedPiece instanceof King) {
-            removeCheckedMoves((King) selectedPiece);
-        }
+        removeCheckedMoves(selectedPiece);
         if (checked) {
             // remove all valid moves except those that would block a check
-            validMoves = BlockCheckMoves(selectedPiece);
+            validMoves = blockCheckMoves(selectedPiece);
         }
 
         for (Tile validMove : validMoves) {
@@ -99,18 +97,26 @@ public class Board extends JPanel implements ActionListener {
         }
     }
     // removes any moves from the valid move list that would cause a king to go checked
-    private void removeCheckedMoves(King king) {
-        for (Tile move : king.getAvailable_moves()) {
-            for (Piece piece : pieceList) {
-                if (piece == king || piece.getColor() == king.getColor()) continue;
-                if (piece.getAvailable_moves().contains(move)) {
-                    validMoves.remove(move);
+    private void removeCheckedMoves(Piece selectedPiece) {
+        if (selectedPiece instanceof King) {
+            for (Tile move : selectedPiece.getAvailable_moves()) {
+                for (Piece piece : pieceList) {
+                    if (piece == selectedPiece || piece.getColor() == selectedPiece.getColor()) continue;
+                    if (piece.getAvailable_moves().contains(move)) {
+                        validMoves.remove(move);
+                    }
                 }
             }
+            return;
         }
+
+        Tile position = selectedPiece.getLocation();
+        position.removePiece();
+        if (checked()) validMoves.clear();
+        position.setPiece(selectedPiece);
     }
     // returns list of tiles that would block a check (will only be called if a game is in checked state)
-    private ArrayList<Tile> BlockCheckMoves(Piece selectedPiece) {
+    private ArrayList<Tile> blockCheckMoves(Piece selectedPiece) {
         Tile originalTile = selectedPiece.getLocation();
         ArrayList<Tile> blockingMoves = new ArrayList<>();
         boolean isKing = selectedPiece instanceof King;
