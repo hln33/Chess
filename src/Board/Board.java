@@ -78,7 +78,7 @@ public class Board extends JPanel implements ActionListener {
             for (Piece piece : pieceList) {
                 if (piece instanceof King || piece.getColor() == king.getColor()) continue;
                 if (piece.getAvailable_moves().contains(kingTile)) {
-                    kingTile.setBackground(Color.RED);
+                    //kingTile.setBackground(Color.RED);
                     king.setChecked(true);
                     return true;
                 }
@@ -89,10 +89,18 @@ public class Board extends JPanel implements ActionListener {
         for (King king : kings) {
             Tile kingTile = king.getLocation();
 
-            kingTile.setBackground(kingTile.getColor());
+            //kingTile.setBackground(kingTile.getColor());
             king.setChecked(false);
         }
         return false;
+    }
+    private void markChecked() {
+        for (King king : kings) {
+            Tile kingTile = king.getLocation();
+            Color highlighting = king.Checked() ? Color.RED : kingTile.getColor();
+
+            kingTile.setBackground(highlighting);
+        }
     }
     // removes any moves from the valid move list that would cause a king to go checked
     private void removeCheckedMoves(King king) {
@@ -128,7 +136,7 @@ public class Board extends JPanel implements ActionListener {
             }
             // move piece back to original spot
             originalTile.setPiece(selectedPiece);
-            move.removePiece();
+            move.setPiece(enemyPiece);
 
             if (enemyPiece != null) pieceList.add(enemyPiece);
 
@@ -271,6 +279,7 @@ public class Board extends JPanel implements ActionListener {
                 removePieceFromGame(clickedTile);
                 movePiece(clickedTile);
                 checked = checked();
+                markChecked();
                 whiteTurn = !whiteTurn;
             }
             removeHighlighting();
