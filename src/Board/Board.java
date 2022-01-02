@@ -6,10 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-// TO-DO: (descending importantance)
+// TO-DO: (descending importance)
 // 1. clean up code
-// 2. fix bugs (especially blockCheckMoves function) DONE
-// 3. prevent a piece (ANY KIND) from moving if it would cause their king to become checked
+// 2. add checkmate detection
 
 public class Board extends JPanel implements ActionListener {
     ArrayList<Piece> pieceList = new ArrayList<>();
@@ -66,7 +65,7 @@ public class Board extends JPanel implements ActionListener {
         }
     }
 
-    // check if a king has been checked
+    // detect if a king has been checked
     private boolean checked() {
         for (King king : kings) {
             Tile kingTile = king.getLocation();
