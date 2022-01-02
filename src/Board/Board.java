@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 // TO-DO: (descending importantance)
 // 1. clean up code
-// 2. fix bugs (especially blockCheckMoves function)
+// 2. fix bugs (especially blockCheckMoves function) DONE
 // 3. prevent a piece (ANY KIND) from moving if it would cause their king to become checked
 
 public class Board extends JPanel implements ActionListener {
@@ -78,7 +78,6 @@ public class Board extends JPanel implements ActionListener {
             for (Piece piece : pieceList) {
                 if (piece instanceof King || piece.getColor() == king.getColor()) continue;
                 if (piece.getAvailable_moves().contains(kingTile)) {
-                    //kingTile.setBackground(Color.RED);
                     king.setChecked(true);
                     return true;
                 }
@@ -87,9 +86,6 @@ public class Board extends JPanel implements ActionListener {
 
         // if we made it here then no kings are checked
         for (King king : kings) {
-            Tile kingTile = king.getLocation();
-
-            //kingTile.setBackground(kingTile.getColor());
             king.setChecked(false);
         }
         return false;
@@ -123,29 +119,20 @@ public class Board extends JPanel implements ActionListener {
         for (Tile move : selectedPiece.getAvailable_moves()) {
             if (isKing) selectedPiece.setLocation(move);
 
-            // account for if there is already a piece on the move tile
+            // check if the move tile is occupied
             Piece enemyPiece = move.getPiece() == null ? null : move.getPiece();
             if (enemyPiece != null) pieceList.remove(enemyPiece);
 
-            // move piece
-            originalTile.removePiece();
+            // check if moving the piece blocks a check
+            originalTile.setPiece(null);
             move.setPiece(selectedPiece);
-            // check if checked
-            if (!checked()) {
-                blockingMoves.add(move);
-            }
-            // move piece back to original spot
+            if (!checked()) blockingMoves.add(move);
             originalTile.setPiece(selectedPiece);
             move.setPiece(enemyPiece);
 
             if (enemyPiece != null) pieceList.add(enemyPiece);
-
-            if (isKing) {
-                move.setBackground(move.getColor());
-                selectedPiece.setLocation(originalTile);
-            }
+            if (isKing) selectedPiece.setLocation(originalTile);
         }
-
         return blockingMoves;
     }
 
