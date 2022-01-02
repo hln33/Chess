@@ -46,8 +46,7 @@ public class Board extends JPanel implements ActionListener {
         return tiles;
     }
 
-    // add highlighting and listeners to valid moves
-    // returns true if we are able to add highlighting, false o.w
+    // add highlighting to represent valid moves
     private void addHighlighting(Piece selectedPiece) {
         validMoves = selectedPiece.getAvailable_moves();
 
@@ -61,14 +60,13 @@ public class Board extends JPanel implements ActionListener {
             validMove.setBackground(Color.CYAN);
         }
     }
-    // remove highlighting and listeners from valid moves
     private void removeHighlighting() {
         for (Tile validMove : validMoves) {
             validMove.setBackground(validMove.getColor());
         }
     }
 
-    // check if a move caused a king to go checked
+    // check if a king has been checked
     private boolean checked() {
         for (King king : kings) {
             Tile kingTile = king.getLocation();
@@ -88,6 +86,7 @@ public class Board extends JPanel implements ActionListener {
         }
         return false;
     }
+    // if a king is checked then color its tile RED, O.W original color
     private void markChecked() {
         for (King king : kings) {
             Tile kingTile = king.getLocation();
