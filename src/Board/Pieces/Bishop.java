@@ -1,13 +1,13 @@
 package Board.Pieces;
 import Board.Board;
 import Board.Tile;
-import java.awt.*;
+
 import java.util.ArrayList;
 
 public class Bishop extends Piece {
     public Bishop(Board board, Tile location, piece_color color) {
         super(board, location, color);
-        this.name = "B";
+        setImage("bishop");
     }
 
     @Override

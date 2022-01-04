@@ -1,13 +1,13 @@
 package Board.Pieces;
 import Board.Board;
 import Board.Tile;
-import java.awt.*;
+
 import java.util.ArrayList;
 
 public class Rook extends Piece {
     public Rook(Board board, Tile location, piece_color color) {
         super(board, location, color);
-        this.name = "R";
+        setImage("rook");
     }
 
     @Override

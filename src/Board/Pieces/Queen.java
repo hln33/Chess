@@ -1,13 +1,13 @@
 package Board.Pieces;
 import Board.Board;
 import Board.Tile;
-import java.awt.*;
+
 import java.util.ArrayList;
 
 public class Queen extends Piece {
     public Queen(Board board, Tile location, piece_color color) {
         super(board, location, color);
-        this.name = "Q";
+        setImage("queen");
     }
 
     @Override

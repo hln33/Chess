@@ -19,7 +19,7 @@ public class Tile extends JButton {
         setPreferredSize(new Dimension(70, 70));
     }
 
-    public Color getColor() {
+    protected Color getColor() {
         return this.color;
     }
 
@@ -28,13 +28,13 @@ public class Tile extends JButton {
     }
 
     protected void setPiece(Piece piece) {
-        String name = piece != null ? piece.getName() : "";
+        ImageIcon icon = piece == null ? null : new ImageIcon(piece.getImage());
 
-        setText(name);
+        setIcon(icon);
         this.piece = piece;
     }
     protected void removePiece() {
-        setText("");
+        setIcon(null);
         this.piece = null;
     }
     public Piece getPiece() {

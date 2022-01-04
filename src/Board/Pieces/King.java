@@ -1,14 +1,14 @@
 package Board.Pieces;
 import Board.Board;
 import Board.Tile;
-import java.awt.*;
+
 import java.util.ArrayList;
 
 public class King extends Piece {
     boolean checked = false;
     public King(Board board, Tile location, piece_color color) {
         super(board, location, color);
-        this.name = "King";
+        setImage("king");
     }
 
     public void setChecked(boolean checked) {

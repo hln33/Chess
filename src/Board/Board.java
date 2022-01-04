@@ -1,5 +1,6 @@
 package Board;
 import Board.Pieces.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -31,7 +32,7 @@ public class Board extends JPanel implements ActionListener {
                 constraints.gridx = col;
                 constraints.gridy = row;
 
-                Color color = (row % 2 == col % 2) ? Color.BLACK : Color.WHITE;
+                Color color = (row % 2 == col % 2) ? Color.darkGray : Color.WHITE;
                 tiles[row][col] = new Tile(color, new Dimension(row, col));
                 tiles[row][col].addActionListener(this);
                 add(tiles[row][col], constraints);

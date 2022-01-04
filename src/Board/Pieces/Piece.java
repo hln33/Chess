@@ -1,6 +1,8 @@
 package Board.Pieces;
 import Board.Board;
 import Board.Tile;
+
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -8,7 +10,7 @@ public abstract class Piece {
     protected final Board parent_board;
     protected Tile location;
     protected ArrayList<Tile> available_moves;
-    protected String name;
+    protected Image image;
     piece_color color;
 
     protected boolean checkBounds(int X, int Y, Tile[][] tiles) {
@@ -35,6 +37,21 @@ public abstract class Piece {
         this.color = color;
     }
 
+    public void setImage(String piece) {
+        try {
+            String name = this.color == piece_color.white ? "white_" + piece : "black_" + piece;
+            Image img = ImageIO.read(getClass().getResource("../assets/" + name + ".png"));
+            this.image = img;
+        }
+        catch (Exception e) {
+            this.image = null;
+            System.out.println(e);
+        }
+    }
+    public Image getImage() {
+        return this.image;
+    }
+
     public Board getParent_board() {
         return this.parent_board;
     }
@@ -50,8 +67,4 @@ public abstract class Piece {
     }
 
     public abstract ArrayList<Tile> getAvailable_moves();
-
-    public String getName() {
-        return this.name;
-    }
 }

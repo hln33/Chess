@@ -1,7 +1,7 @@
 package Board.Pieces;
 import Board.Board;
 import Board.Tile;
-import java.awt.*;
+
 import java.util.ArrayList;
 
 public class Pawn extends Piece {
@@ -9,7 +9,7 @@ public class Pawn extends Piece {
 
     public Pawn(Board board, Tile location, piece_color color) {
         super(board, location, color);
-        this.name = "p";
+        setImage("pawn");
     }
 
     @Override
