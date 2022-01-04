@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 // TO-DO: (descending importance)
 // 1. clean up code
-// 2. add checkmate detection
+// 2. add checkmate detectionN
 
 public class Board extends JPanel implements ActionListener {
     ArrayList<Piece> pieceList = new ArrayList<>();
@@ -254,11 +254,9 @@ public class Board extends JPanel implements ActionListener {
         // if a piece has yet to be selected
         if (!selected && clickedPiece != null) {
             validMoves = new ArrayList<>();
+            boolean white = clickedPiece.getColor() == piece_color.white;
 
-            if (whiteTurn && clickedPiece.getColor() == piece_color.white) {
-                addHighlighting(clickedPiece);
-            }
-            else if (!whiteTurn && clickedPiece.getColor() == piece_color.black) {
+            if ((whiteTurn && white) || (!whiteTurn && !white)) {
                 addHighlighting(clickedPiece);
             }
             selectedTile = clickedTile;
