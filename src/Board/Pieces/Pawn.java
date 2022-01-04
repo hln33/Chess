@@ -17,8 +17,8 @@ public class Pawn extends Piece {
         this.available_moves = new ArrayList<>();
         Tile[][] tiles = this.getParent_board().getTiles();
         Tile candidate;
-        int x = this.location.getCoordinates().width;
-        int y = this.location.getCoordinates().height;
+        int x = this.tile.getCoordinates().width;
+        int y = this.tile.getCoordinates().height;
         int direction = (this.color == piece_color.black) ? 1 : -1;
         int newX, newY;
 
@@ -53,8 +53,8 @@ public class Pawn extends Piece {
     }
 
     @Override
-    public void setLocation(Tile newLocation) {
-        super.setLocation(newLocation);
+    public void setTile(Tile newLocation) {
+        super.setTile(newLocation);
         unmoved = false;
     }
 }

@@ -5,10 +5,11 @@ import Board.Tile;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public abstract class Piece {
     protected final Board parent_board;
-    protected Tile location;
+    protected Tile tile;
     protected ArrayList<Tile> available_moves;
     protected Image image;
     piece_color color;
@@ -31,17 +32,16 @@ public abstract class Piece {
         return false;
     }
 
-    Piece(Board board, Tile location, piece_color color) {
+    Piece(Board board, Tile tile, piece_color color) {
         this.parent_board = board;
-        this.location = location;
+        this.tile = tile;
         this.color = color;
     }
 
     public void setImage(String piece) {
         try {
             String name = this.color == piece_color.white ? "white_" + piece : "black_" + piece;
-            Image img = ImageIO.read(getClass().getResource("../assets/" + name + ".png"));
-            this.image = img;
+            this.image = ImageIO.read(Objects.requireNonNull(getClass().getResource("../assets/" + name + ".png")));
         }
         catch (Exception e) {
             this.image = null;
@@ -59,11 +59,11 @@ public abstract class Piece {
         return this.color;
     }
 
-    public void setLocation(Tile newLocation) {
-        this.location = newLocation;
+    public void setTile(Tile newLocation) {
+        this.tile = newLocation;
     }
-    public Tile getLocation() {
-        return this.location;
+    public Tile getTile() {
+        return this.tile;
     }
 
     public abstract ArrayList<Tile> getAvailable_moves();

@@ -14,8 +14,8 @@ public class Knight extends Piece {
     public ArrayList<Tile> getAvailable_moves() {
         this.available_moves = new ArrayList<>();
         Tile[][] tiles = this.getParent_board().getTiles();
-        int x = this.location.getCoordinates().width;
-        int y = this.location.getCoordinates().height;
+        int x = this.tile.getCoordinates().width;
+        int y = this.tile.getCoordinates().height;
         int newX, newY;
 
         newX = x + 2;

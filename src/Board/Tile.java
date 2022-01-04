@@ -15,7 +15,6 @@ public class Tile extends JButton {
         setBorder(new LineBorder(Color.BLACK, 1));
         setOpaque(true);
         setBackground(color);
-        setForeground(Color.ORANGE);
         setPreferredSize(new Dimension(70, 70));
     }
 

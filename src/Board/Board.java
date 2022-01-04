@@ -69,7 +69,7 @@ public class Board extends JPanel implements ActionListener {
     // detect if a king has been checked
     private boolean detectCheck() {
         for (King king : kings) {
-            Tile kingTile = king.getLocation();
+            Tile kingTile = king.getTile();
 
             for (Piece piece : pieceList) {
                 if (piece instanceof King || piece.getColor() == king.getColor()) continue;
@@ -89,7 +89,7 @@ public class Board extends JPanel implements ActionListener {
     // if a king is checked then color its tile RED, O.W original color
     private void markChecked() {
         for (King king : kings) {
-            Tile kingTile = king.getLocation();
+            Tile kingTile = king.getTile();
             Color highlighting = king.Checked() ? Color.RED : kingTile.getColor();
 
             kingTile.setBackground(highlighting);
@@ -116,21 +116,20 @@ public class Board extends JPanel implements ActionListener {
             return;
         }
 
-        Tile position = selectedPiece.getLocation();
+        Tile position = selectedPiece.getTile();
         position.removePiece();
-        position.setPiece(selectedPiece);
-
         if (detectCheck()) validMoves.clear();
+        position.setPiece(selectedPiece);
     }
     // returns list of tiles that would block a check (will only be called if a game is in checked state)
     private ArrayList<Tile> blockCheckMoves(Piece selectedPiece) {
-        Tile originalTile = selectedPiece.getLocation();
+        Tile originalTile = selectedPiece.getTile();
         ArrayList<Tile> blockingMoves = new ArrayList<>();
         boolean isKing = selectedPiece instanceof King;
 
         // put piece on a valid tile then check if it blocked a check
         for (Tile move : selectedPiece.getAvailable_moves()) {
-            if (isKing) selectedPiece.setLocation(move);
+            if (isKing) selectedPiece.setTile(move);
 
             // check if the move tile is occupied
             Piece enemyPiece = move.getPiece() == null ? null : move.getPiece();
@@ -144,16 +143,18 @@ public class Board extends JPanel implements ActionListener {
             move.setPiece(enemyPiece);
 
             if (enemyPiece != null) pieceList.add(enemyPiece);
-            if (isKing) selectedPiece.setLocation(originalTile);
+            if (isKing) selectedPiece.setTile(originalTile);
         }
         return blockingMoves;
     }
 
     private void movePiece(Tile chosenTile) {
         Piece selectedPiece = selectedTile.getPiece();
+        selectedPiece.setTile(chosenTile);
 
-        selectedPiece.setLocation(chosenTile);
+        if (chosenTile.getPiece() != null) removePieceFromGame(chosenTile);
         chosenTile.setPiece(selectedPiece);
+
         selectedTile.removePiece();
         selectedTile.setBackground(selectedTile.getColor());
     }
@@ -162,7 +163,7 @@ public class Board extends JPanel implements ActionListener {
         pieceList.remove(eliminatedPiece);
     }
     private void addPieceToGame(Piece newPiece) {
-        Tile tile = newPiece.getLocation();
+        Tile tile = newPiece.getTile();
         tile.setPiece(newPiece);
         pieceList.add(newPiece);
     }
@@ -260,19 +261,18 @@ public class Board extends JPanel implements ActionListener {
 
         // if a piece has yet to be selected
         if (!selected && clickedPiece != null) {
+            validMoves.clear();
             boolean whitePiece = clickedPiece.getColor() == piece_color.white;
-
             if ((whiteTurn && whitePiece) || (!whiteTurn && !whitePiece)) {
+                selectedTile = clickedTile;
                 addHighlighting(clickedPiece);
             }
-            selectedTile = clickedTile;
             selected = validMoves.size() != 0;
         }
         // if a piece has previously been selected
         else if (selected) {
             // move piece to tile if clicked tile was a valid move
             if (validMoves.contains(clickedTile)) {
-                if (clickedTile.getPiece() != null) removePieceFromGame(clickedTile);
                 movePiece(clickedTile);
                 checked = detectCheck();
                 markChecked();
