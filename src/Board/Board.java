@@ -18,7 +18,6 @@ public class Board extends JPanel implements ActionListener {
     Tile[][] tiles = new Tile[8][8];
     Tile selectedTile;
     boolean selected = false;
-    boolean checked;
     boolean whiteTurn = true;
 
     // set up board
@@ -40,6 +39,91 @@ public class Board extends JPanel implements ActionListener {
         }
         addPieces();
     }
+    private void addPawns() {
+        Pawn newPawn;
+        // black pawns
+        for (int col = 0; col < 8; ++col) {
+            newPawn = new Pawn(this, tiles[1][col], piece_color.black);
+            addPieceToGame(newPawn);
+        }
+        // white pawns
+        for (int col = 0; col < 8; ++col) {
+            newPawn = new Pawn(this, tiles[6][col], piece_color.white);
+            addPieceToGame(newPawn);
+        }
+    }
+    private void addRooks() {
+        Rook newRook;
+        // black rooks
+        newRook = new Rook(this, tiles[0][0], piece_color.black);
+        addPieceToGame(newRook);
+        newRook = new Rook(this, tiles[0][7], piece_color.black);
+        addPieceToGame(newRook);
+
+        // white rooks
+        newRook = new Rook(this, tiles[7][0], piece_color.white);
+        addPieceToGame(newRook);
+        newRook = new Rook(this, tiles[7][7], piece_color.white);
+        addPieceToGame(newRook);
+    }
+    private void addKnights() {
+        Knight newKnight;
+        // black knights
+        newKnight = new Knight(this, tiles[0][1], piece_color.black);
+        addPieceToGame(newKnight);
+        newKnight = new Knight(this, tiles[0][6], piece_color.black);
+        addPieceToGame(newKnight);
+
+        // white knights
+        newKnight = new Knight(this, tiles[7][1], piece_color.white);
+        addPieceToGame(newKnight);
+        newKnight = new Knight(this, tiles[7][6], piece_color.white);
+        addPieceToGame(newKnight);
+    }
+    private void addBishops() {
+        Bishop newBishop;
+        // black bishops
+        newBishop = new Bishop(this, tiles[0][2], piece_color.black);
+        addPieceToGame(newBishop);
+        newBishop = new Bishop(this, tiles[0][5], piece_color.black);
+        addPieceToGame(newBishop);
+
+        // white bishops
+        newBishop = new Bishop(this, tiles[7][2], piece_color.white);
+        addPieceToGame(newBishop);
+        newBishop = new Bishop(this, tiles[7][5], piece_color.white);
+        addPieceToGame(newBishop);
+    }
+    private void addQueens() {
+        Queen newQueen;
+        // black queen
+        newQueen = new Queen(this, tiles[0][4], piece_color.black);
+        addPieceToGame(newQueen);
+
+        // white queen
+        newQueen = new Queen(this, tiles[7][4], piece_color.white);
+        addPieceToGame(newQueen);
+    }
+    private void addKings() {
+        King newKing;
+        // black king
+        newKing = new King(this, tiles[0][3], piece_color.black);
+        kings[1] = newKing;
+        addPieceToGame(newKing);
+
+        // white king
+        newKing = new King(this, tiles[7][3], piece_color.white);
+        kings[0] = newKing;
+        addPieceToGame(newKing);
+    }
+    private void addPieces() {
+        addPawns();
+        addRooks();
+        addKnights();
+        addBishops();
+        addQueens();
+        addKings();
+    }
 
     // getters
     public Tile[][] getTiles() {
@@ -51,7 +135,7 @@ public class Board extends JPanel implements ActionListener {
         validMoves = selectedPiece.getAvailable_moves();
 
         removeCheckedMoves(selectedPiece);
-        if (checked) {
+        if (detectCheck()) {
             // remove all valid moves except those that would block a check
             validMoves = blockCheckMoves(selectedPiece);
         }
@@ -167,91 +251,6 @@ public class Board extends JPanel implements ActionListener {
         tile.setPiece(newPiece);
         pieceList.add(newPiece);
     }
-    private void addPawns() {
-        Pawn newPawn;
-        // black pawns
-        for (int col = 0; col < 8; ++col) {
-            newPawn = new Pawn(this, tiles[1][col], piece_color.black);
-            addPieceToGame(newPawn);
-        }
-        // white pawns
-        for (int col = 0; col < 8; ++col) {
-            newPawn = new Pawn(this, tiles[6][col], piece_color.white);
-            addPieceToGame(newPawn);
-        }
-    }
-    private void addRooks() {
-        Rook newRook;
-        // black rooks
-        newRook = new Rook(this, tiles[0][0], piece_color.black);
-        addPieceToGame(newRook);
-        newRook = new Rook(this, tiles[0][7], piece_color.black);
-        addPieceToGame(newRook);
-
-        // white rooks
-        newRook = new Rook(this, tiles[7][0], piece_color.white);
-        addPieceToGame(newRook);
-        newRook = new Rook(this, tiles[7][7], piece_color.white);
-        addPieceToGame(newRook);
-    }
-    private void addKnights() {
-        Knight newKnight;
-        // black knights
-        newKnight = new Knight(this, tiles[0][1], piece_color.black);
-        addPieceToGame(newKnight);
-        newKnight = new Knight(this, tiles[0][6], piece_color.black);
-        addPieceToGame(newKnight);
-
-        // white knights
-        newKnight = new Knight(this, tiles[7][1], piece_color.white);
-        addPieceToGame(newKnight);
-        newKnight = new Knight(this, tiles[7][6], piece_color.white);
-        addPieceToGame(newKnight);
-    }
-    private void addBishops() {
-        Bishop newBishop;
-        // black bishops
-        newBishop = new Bishop(this, tiles[0][2], piece_color.black);
-        addPieceToGame(newBishop);
-        newBishop = new Bishop(this, tiles[0][5], piece_color.black);
-        addPieceToGame(newBishop);
-
-        // white bishops
-        newBishop = new Bishop(this, tiles[7][2], piece_color.white);
-        addPieceToGame(newBishop);
-        newBishop = new Bishop(this, tiles[7][5], piece_color.white);
-        addPieceToGame(newBishop);
-    }
-    private void addQueens() {
-        Queen newQueen;
-        // black queen
-        newQueen = new Queen(this, tiles[0][4], piece_color.black);
-        addPieceToGame(newQueen);
-
-        // white queen
-        newQueen = new Queen(this, tiles[7][4], piece_color.white);
-        addPieceToGame(newQueen);
-    }
-    private void addKings() {
-        King newKing;
-        // black king
-        newKing = new King(this, tiles[0][3], piece_color.black);
-        kings[1] = newKing;
-        addPieceToGame(newKing);
-
-        // white king
-        newKing = new King(this, tiles[7][3], piece_color.white);
-        kings[0] = newKing;
-        addPieceToGame(newKing);
-    }
-    private void addPieces() {
-        addPawns();
-        addRooks();
-        addKnights();
-        addBishops();
-        addQueens();
-        addKings();
-    }
 
     // handle user input
     @Override
@@ -274,7 +273,7 @@ public class Board extends JPanel implements ActionListener {
             // move piece to tile if clicked tile was a valid move
             if (validMoves.contains(clickedTile)) {
                 movePiece(clickedTile);
-                checked = detectCheck();
+                detectCheck();
                 markChecked();
                 detectCheckmate();
                 whiteTurn = !whiteTurn;
