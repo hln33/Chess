@@ -232,15 +232,15 @@ public class Board extends JPanel implements ActionListener {
         return blockingMoves;
     }
 
-    private void movePiece(Tile chosenTile) {
-        Piece selectedPiece = selectedTile.getPiece();
-        selectedPiece.setTile(chosenTile);
+    private void movePiece(Tile clickedTile, Tile previousTile ) {
+        Piece selectedPiece = previousTile.getPiece();
+        selectedPiece.setTile(clickedTile);
 
-        if (chosenTile.getPiece() != null) removePieceFromGame(chosenTile);
-        chosenTile.setPiece(selectedPiece);
+        if (clickedTile.getPiece() != null) removePieceFromGame(clickedTile);
+        clickedTile.setPiece(selectedPiece);
 
-        selectedTile.removePiece();
-        selectedTile.setBackground(selectedTile.getColor());
+        previousTile.removePiece();
+        previousTile.setBackground(previousTile.getColor());
     }
     private void removePieceFromGame(Tile chosenTile) {
         Piece eliminatedPiece = chosenTile.getPiece();
@@ -272,7 +272,7 @@ public class Board extends JPanel implements ActionListener {
         else if (selected) {
             // move piece to tile if clicked tile was a valid move
             if (validMoves.contains(clickedTile)) {
-                movePiece(clickedTile);
+                movePiece(clickedTile, selectedTile);
                 detectCheck();
                 markChecked();
                 detectCheckmate();
