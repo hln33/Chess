@@ -150,6 +150,51 @@ public class Board extends JPanel implements ActionListener {
         }
     }
 
+    // removes any moves from the valid move list that would cause a king to go checked
+    private void removeCheckedMoves(Piece selectedPiece) {
+        if (selectedPiece instanceof King) {
+            for (Tile move : selectedPiece.getAvailable_moves()) {
+                for (Piece piece : pieceList) {
+                    if (piece == selectedPiece || piece.getColor() == selectedPiece.getColor()) continue;
+                    if (piece.getAvailable_moves().contains(move)) {
+                        validMoves.remove(move);
+                    }
+                }
+            }
+            return;
+        }
+
+        Tile position = selectedPiece.getTile();
+        position.removePiece();
+        if (detectCheck()) validMoves.clear();
+        position.setPiece(selectedPiece);
+    }
+    // returns list of tiles that would block a check (will only be called if a game is in checked state)
+    private ArrayList<Tile> blockCheckMoves(Piece selectedPiece) {
+        Tile originalTile = selectedPiece.getTile();
+        ArrayList<Tile> blockingMoves = new ArrayList<>();
+
+        // put piece on a valid tile then check if it blocked a check
+        for (Tile move : selectedPiece.getAvailable_moves()) {
+            selectedPiece.setTile(move);
+
+            // check if the move tile is occupied
+            Piece enemyPiece = move.getPiece();
+            if (enemyPiece != null) pieceList.remove(enemyPiece);
+
+            // check if moving the piece blocks a check
+            originalTile.setPiece(null);
+            move.setPiece(selectedPiece);
+            if (!detectCheck()) blockingMoves.add(move);
+            originalTile.setPiece(selectedPiece);
+            move.setPiece(enemyPiece);
+
+            if (enemyPiece != null) pieceList.add(enemyPiece);
+            selectedPiece.setTile(originalTile);
+        }
+        return blockingMoves;
+    }
+
     // detect if a king has been checked
     private boolean detectCheck() {
         for (King king : kings) {
@@ -190,51 +235,6 @@ public class Board extends JPanel implements ActionListener {
 
             kingTile.setBackground(highlighting);
         }
-    }
-    // removes any moves from the valid move list that would cause a king to go checked
-    private void removeCheckedMoves(Piece selectedPiece) {
-        if (selectedPiece instanceof King) {
-            for (Tile move : selectedPiece.getAvailable_moves()) {
-                for (Piece piece : pieceList) {
-                    if (piece == selectedPiece || piece.getColor() == selectedPiece.getColor()) continue;
-                    if (piece.getAvailable_moves().contains(move)) {
-                        validMoves.remove(move);
-                    }
-                }
-            }
-            return;
-        }
-
-        Tile position = selectedPiece.getTile();
-        position.removePiece();
-        if (detectCheck()) validMoves.clear();
-        position.setPiece(selectedPiece);
-    }
-    // returns list of tiles that would block a check (will only be called if a game is in checked state)
-    private ArrayList<Tile> blockCheckMoves(Piece selectedPiece) {
-        Tile originalTile = selectedPiece.getTile();
-        ArrayList<Tile> blockingMoves = new ArrayList<>();
-        boolean isKing = selectedPiece instanceof King;
-
-        // put piece on a valid tile then check if it blocked a check
-        for (Tile move : selectedPiece.getAvailable_moves()) {
-            if (isKing) selectedPiece.setTile(move);
-
-            // check if the move tile is occupied
-            Piece enemyPiece = move.getPiece() == null ? null : move.getPiece();
-            if (enemyPiece != null) pieceList.remove(enemyPiece);
-
-            // check if moving the piece blocks a check
-            originalTile.setPiece(null);
-            move.setPiece(selectedPiece);
-            if (!detectCheck()) blockingMoves.add(move);
-            originalTile.setPiece(selectedPiece);
-            move.setPiece(enemyPiece);
-
-            if (enemyPiece != null) pieceList.add(enemyPiece);
-            if (isKing) selectedPiece.setTile(originalTile);
-        }
-        return blockingMoves;
     }
 
     private void movePiece(Tile clickedTile, Tile previousTile ) {
