@@ -170,6 +170,18 @@ public class Board extends JPanel implements ActionListener {
         }
         return false;
     }
+    private void detectCheckmate() {
+        for (King king : kings) {
+            if (king.Checked() && king.getAvailable_moves().isEmpty()) {
+                //CHECKMATE
+            }
+        }
+    }
+    private void checkGameConditions() {
+        detectCheck();
+        markChecked();
+        detectCheckmate();
+    }
     // if a king is checked then color its tile RED, O.W original color
     private void markChecked() {
         for (King king : kings) {
@@ -177,13 +189,6 @@ public class Board extends JPanel implements ActionListener {
             Color highlighting = king.Checked() ? Color.RED : kingTile.getColor();
 
             kingTile.setBackground(highlighting);
-        }
-    }
-    private void detectCheckmate() {
-        for (King king : kings) {
-            if (king.Checked() && king.getAvailable_moves().isEmpty()) {
-                //CHECKMATE
-            }
         }
     }
     // removes any moves from the valid move list that would cause a king to go checked
@@ -261,11 +266,13 @@ public class Board extends JPanel implements ActionListener {
         // if a piece has yet to be selected
         if (!selected && clickedPiece != null) {
             validMoves.clear();
+
             boolean whitePiece = clickedPiece.getColor() == piece_color.white;
             if ((whiteTurn && whitePiece) || (!whiteTurn && !whitePiece)) {
                 selectedTile = clickedTile;
                 addHighlighting(clickedPiece);
             }
+
             selected = validMoves.size() != 0;
         }
         // if a piece has previously been selected
@@ -273,11 +280,10 @@ public class Board extends JPanel implements ActionListener {
             // move piece to tile if clicked tile was a valid move
             if (validMoves.contains(clickedTile)) {
                 movePiece(clickedTile, selectedTile);
-                detectCheck();
-                markChecked();
-                detectCheckmate();
+                checkGameConditions();
                 whiteTurn = !whiteTurn;
             }
+
             removeHighlighting();
             selected = false;
         }
