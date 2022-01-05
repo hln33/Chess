@@ -156,7 +156,11 @@ public class Board extends JPanel implements ActionListener {
             for (Tile move : selectedPiece.getAvailable_moves()) {
                 for (Piece piece : pieceList) {
                     if (piece == selectedPiece || piece.getColor() == selectedPiece.getColor()) continue;
-                    if (piece.getAvailable_moves().contains(move)) {
+
+                    if (piece instanceof Pawn) {
+                        if (((Pawn)piece).getEliminating_moves().contains(move)) validMoves.remove(move);
+                    }
+                    else if (piece.getAvailable_moves().contains(move)) {
                         validMoves.remove(move);
                     }
                 }

@@ -52,6 +52,30 @@ public class Pawn extends Piece {
         return this.available_moves;
     }
 
+    public ArrayList<Tile> getEliminating_moves() {
+        ArrayList<Tile> eliminatingMoves = new ArrayList<>();
+        Tile[][] tiles = this.parent_board.getTiles();
+        Tile candidate;
+        int x = this.tile.getCoordinates().width;
+        int y = this.tile.getCoordinates().height;
+        int direction = (this.color == piece_color.black) ? 1 : -1;
+        int newX, newY;
+
+        newX = x + direction;
+        newY = y + 1;
+        if (checkBounds(newX, newY, tiles)) {
+            candidate = tiles[newX][newY];
+            eliminatingMoves.add(candidate);
+        }
+        newY = y - 1;
+        if (checkBounds(newX, newY, tiles)) {
+            candidate = tiles[newX][newY];
+            eliminatingMoves.add(candidate);
+        }
+
+        return eliminatingMoves;
+    }
+
     @Override
     public void setTile(Tile newLocation) {
         super.setTile(newLocation);
