@@ -5,6 +5,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 
 // TO-DO: (descending importance)
@@ -19,6 +21,14 @@ public class Board extends JPanel implements ActionListener {
     Tile selectedTile;
     boolean selected = false;
     boolean whiteTurn = true;
+
+    private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    public void addPropertyChangeListener(PropertyChangeListener l) {
+        pcs.addPropertyChangeListener(l);
+    }
+    public void removePropertyChangeListener(PropertyChangeListener l) {
+        pcs.removePropertyChangeListener(l);
+    }
 
     // set up board
     public Board() {
@@ -125,9 +135,12 @@ public class Board extends JPanel implements ActionListener {
         addKings();
     }
 
-    // getters
+    // getters and setters
     public Tile[][] getTiles() {
         return tiles;
+    }
+    public void setGameOver() {
+        pcs.firePropertyChange("GameOver", (java.lang.Boolean)false, (java.lang.Boolean)true);
     }
 
     // add highlighting to represent valid moves
@@ -223,6 +236,7 @@ public class Board extends JPanel implements ActionListener {
         for (King king : kings) {
             if (king.Checked() && king.getAvailable_moves().isEmpty()) {
                 //CHECKMATE
+
             }
         }
     }
@@ -266,6 +280,7 @@ public class Board extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         Tile clickedTile = (Tile)e.getSource();
         Piece clickedPiece = clickedTile.getPiece();
+        setGameOver();
 
         // if a piece has yet to be selected
         if (!selected && clickedPiece != null) {
