@@ -39,7 +39,7 @@ public class Game {
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
             if ("GameOver".equals(evt.getPropertyName())) {
-                System.out.println(evt.getPropertyName());
+                System.out.println(evt.getNewValue());
             }
         }
     }

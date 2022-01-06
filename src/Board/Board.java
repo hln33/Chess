@@ -139,8 +139,8 @@ public class Board extends JPanel implements ActionListener {
     public Tile[][] getTiles() {
         return tiles;
     }
-    public void setGameOver() {
-        pcs.firePropertyChange("GameOver", (java.lang.Boolean)false, (java.lang.Boolean)true);
+    public void setGameOver(String message) {
+        pcs.firePropertyChange("GameOver", "", message);
     }
 
     // add highlighting to represent valid moves
@@ -234,9 +234,10 @@ public class Board extends JPanel implements ActionListener {
     }
     private void detectCheckmate() {
         for (King king : kings) {
-            if (king.Checked() && king.getAvailable_moves().isEmpty()) {
-                //CHECKMATE
-
+            if (king.Checked() && blockCheckMoves(king).isEmpty()) {
+                boolean whiteWins = king.getColor() == piece_color.black;
+                String gameOverMessage = whiteWins ? "WHITE WINS" : "BLACK WINS";
+                setGameOver(gameOverMessage);
             }
         }
     }
@@ -280,7 +281,6 @@ public class Board extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         Tile clickedTile = (Tile)e.getSource();
         Piece clickedPiece = clickedTile.getPiece();
-        setGameOver();
 
         // if a piece has yet to be selected
         if (!selected && clickedPiece != null) {
