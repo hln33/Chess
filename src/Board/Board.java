@@ -1,4 +1,5 @@
 package Board;
+import Board.AI.AI;
 import Board.Pieces.*;
 
 import javax.swing.*;
@@ -21,6 +22,8 @@ public class Board extends JPanel implements ActionListener {
     Tile selectedTile;
     boolean selected = false;
     boolean whiteTurn = true;
+    boolean PVP;
+    AI ai = new AI();
 
     private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     public void addPropertyChangeListener(PropertyChangeListener l) {
@@ -31,7 +34,9 @@ public class Board extends JPanel implements ActionListener {
     }
 
     // set up board
-    public Board() {
+    public Board(boolean PVP) {
+        this.PVP = PVP;
+
         setBounds(100, 150, 500, 500);
         setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
@@ -301,11 +306,31 @@ public class Board extends JPanel implements ActionListener {
                 movePiece(clickedTile, selectedTile);
                 checkGameConditions();
                 whiteTurn = !whiteTurn;
+                // if AI is enabled then computer will make a move
+                if (!PVP) {
+                    ComputerMove();
+                    checkGameConditions();
+                    whiteTurn = !whiteTurn;
+                }
             }
 
             removeHighlighting();
             selected = false;
         }
     }
-}
 
+    // the AI needs to know when they are checked
+    private void ComputerMove() {
+        ArrayList<Piece> blackPieces = new ArrayList<>();
+        for (Piece piece : pieceList) {
+            if (piece.getColor() == piece_color.black) {
+                blackPieces.add(piece);
+            }
+        }
+        AI.PieceAndMove pAm = ai.getMove(blackPieces);
+        Tile curr = pAm.piece.getTile();
+        Tile randomMove = pAm.move;
+
+        movePiece(randomMove, curr);
+    }
+}

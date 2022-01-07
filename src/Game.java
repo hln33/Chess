@@ -46,10 +46,11 @@ public class Game {
         @Override
         public void actionPerformed(ActionEvent e) {
             JButton clickedButton = (JButton)e.getSource();
-            Board board = new Board();
+            boolean PVP = Objects.equals(clickedButton.getText(), "Two Player");
+
+            Board board = new Board(PVP);
             board.addPropertyChangeListener(new GameOverListener());
 
-            boolean PVP = Objects.equals(clickedButton.getText(), "Two Player");
             frame.remove(this);
             frame.add(title, BorderLayout.NORTH);
             frame.add(board);
