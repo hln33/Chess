@@ -152,7 +152,7 @@ public class Board extends JPanel implements ActionListener {
     private void addHighlighting(Piece selectedPiece) {
         validMoves = selectedPiece.getAvailable_moves();
 
-        removeCheckedMoves(selectedPiece);
+        validMoves = removeCheckedMoves(selectedPiece);
         if (detectCheck()) {
             // remove all valid moves except those that would block a check
             validMoves = blockCheckMoves(selectedPiece);
@@ -169,27 +169,30 @@ public class Board extends JPanel implements ActionListener {
     }
 
     // removes any moves from the valid move list that would cause a king to go checked
-    private void removeCheckedMoves(Piece selectedPiece) {
+    private ArrayList<Tile> removeCheckedMoves(Piece selectedPiece) {
+        ArrayList<Tile> newMoves = selectedPiece.getAvailable_moves();
+
         if (selectedPiece instanceof King) {
             for (Tile move : selectedPiece.getAvailable_moves()) {
                 for (Piece piece : pieceList) {
                     if (piece == selectedPiece || piece.getColor() == selectedPiece.getColor()) continue;
 
                     if (piece instanceof Pawn) {
-                        if (((Pawn)piece).getEliminating_moves().contains(move)) validMoves.remove(move);
+                        if (((Pawn)piece).getEliminating_moves().contains(move)) newMoves.remove(move);
                     }
                     else if (piece.getAvailable_moves().contains(move)) {
-                        validMoves.remove(move);
+                        newMoves.remove(move);
                     }
                 }
             }
-            return;
+            return newMoves;
         }
 
         Tile position = selectedPiece.getTile();
         position.removePiece();
-        if (detectCheck()) validMoves.clear();
+        if (detectCheck()) newMoves.clear();
         position.setPiece(selectedPiece);
+        return newMoves;
     }
     // returns list of tiles that would block a check (will only be called if a game is in checked state)
     private ArrayList<Tile> blockCheckMoves(Piece selectedPiece) {
