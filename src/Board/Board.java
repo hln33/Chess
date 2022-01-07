@@ -15,8 +15,8 @@ import java.util.Objects;
 
 public class Board extends JPanel implements ActionListener {
     ArrayList<Piece> pieceList = new ArrayList<>();
-    King[] kings = new King[2];
     ArrayList<Tile> validMoves = new ArrayList<>();
+    King[] kings = new King[2];
     Tile[][] tiles = new Tile[8][8];
     Tile selectedTile;
     boolean selected = false;
@@ -25,6 +25,7 @@ public class Board extends JPanel implements ActionListener {
     AI ai = new AI();
     Chess logicManager;
 
+    // game over detection
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     public void addPropertyChangeListener(PropertyChangeListener l) {
         pcs.addPropertyChangeListener(l);
@@ -203,11 +204,7 @@ public class Board extends JPanel implements ActionListener {
                 checkGameOver();
                 whiteTurn = !whiteTurn;
                 // if AI is enabled then computer will make a move
-                if (!PVP) {
-                    ComputerMove();
-                    checkGameOver();
-                    whiteTurn = !whiteTurn;
-                }
+                if (!PVP) ComputerMove();
             }
 
             removeHighlighting();
@@ -228,5 +225,7 @@ public class Board extends JPanel implements ActionListener {
         Tile randomMove = pAm.move;
 
         logicManager.movePiece(randomMove, curr);
+        checkGameOver();
+        whiteTurn = !whiteTurn;
     }
 }
