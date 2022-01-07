@@ -8,8 +8,6 @@ import java.beans.PropertyChangeListener;
 import java.util.Objects;
 
 public class Game implements ActionListener {
-    boolean PVP;
-
     private static class Title extends JPanel {
         JLabel label = new JLabel();
 
@@ -29,7 +27,6 @@ public class Game implements ActionListener {
             label.setText(newTitle);
         }
     }
-
     private static class Start extends JPanel {
         JButton onePlayer = new JButton();
         JButton twoPlayer = new JButton();
@@ -74,7 +71,7 @@ public class Game implements ActionListener {
         Board board = new Board();
         board.addPropertyChangeListener(new GameOverListener());
 
-        PVP = Objects.equals(clickedButton.getText(), "Two Player");
+        boolean PVP = Objects.equals(clickedButton.getText(), "Two Player");
         frame.remove(start);
         frame.add(title, BorderLayout.NORTH);
         frame.add(board);
