@@ -9,12 +9,12 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class Chess {
-    private Board state;
-    private ArrayList<Piece> pieceList;
+    private final Board State;
+    private final ArrayList<Piece> Piece_List;
 
     public Chess(Board state) {
-        this.state = state;
-        this.pieceList = state.getPieces();
+        this.State = state;
+        this.Piece_List = state.getPieces();
     }
 
     public void movePiece(Tile clickedTile, Tile previousTile ) {
@@ -29,7 +29,7 @@ public class Chess {
     }
     private void removePieceFromGame(Tile chosenTile) {
         Piece eliminatedPiece = chosenTile.getPiece();
-        pieceList.remove(eliminatedPiece);
+        Piece_List.remove(eliminatedPiece);
     }
 
     public ArrayList<Tile> filterMoves(Piece selectedPiece) {
@@ -41,7 +41,7 @@ public class Chess {
 
         if (selectedPiece instanceof King) {
             for (Tile move : selectedPiece.getAvailable_moves()) {
-                for (Piece piece : pieceList) {
+                for (Piece piece : Piece_List) {
                     if (piece == selectedPiece || piece.getColor() == selectedPiece.getColor()) continue;
 
                     if (piece instanceof Pawn) {
@@ -72,7 +72,7 @@ public class Chess {
 
             // check if the move tile is occupied
             Piece enemyPiece = move.getPiece();
-            if (enemyPiece != null) pieceList.remove(enemyPiece);
+            if (enemyPiece != null) Piece_List.remove(enemyPiece);
 
             // check if moving the piece blocks a check
             originalTile.setPiece(null);
@@ -81,7 +81,7 @@ public class Chess {
             originalTile.setPiece(selectedPiece);
             move.setPiece(enemyPiece);
 
-            if (enemyPiece != null) pieceList.add(enemyPiece);
+            if (enemyPiece != null) Piece_List.add(enemyPiece);
             selectedPiece.setTile(originalTile);
         }
         return blockingMoves;
@@ -94,12 +94,12 @@ public class Chess {
     }
     // detect if a king has been checked
     private boolean detectCheck() {
-        King[] kings = this.state.getKings();
+        King[] kings = this.State.getKings();
 
         for (King king : kings) {
             Tile kingTile = king.getTile();
 
-            for (Piece piece : pieceList) {
+            for (Piece piece : Piece_List) {
                 if (piece instanceof King || piece.getColor() == king.getColor()) continue;
                 if (piece.getAvailable_moves().contains(kingTile)) {
                     king.setChecked(true);
@@ -116,7 +116,7 @@ public class Chess {
     }
     // if a king is checked then color its tile RED, O.W original color
     private void markChecked() {
-        King[] kings = this.state.getKings();
+        King[] kings = this.State.getKings();
 
         for (King king : kings) {
             Tile kingTile = king.getTile();
@@ -126,7 +126,7 @@ public class Chess {
         }
     }
     private String detectCheckmate() {
-        King[] kings = this.state.getKings();
+        King[] kings = this.State.getKings();
 
         for (King king : kings) {
             if (king.Checked() && blockCheckMoves(king).isEmpty()) {
