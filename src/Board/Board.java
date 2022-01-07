@@ -22,7 +22,7 @@ public class Board extends JPanel implements ActionListener {
     boolean selected = false;
     boolean whiteTurn = true;
     boolean PVP;
-    AI ai = new AI();
+    AI ai;
     Chess logicManager;
 
     // game over detection
@@ -61,6 +61,7 @@ public class Board extends JPanel implements ActionListener {
         }
         addPieces();
         this.logicManager = new Chess(this);
+        this.ai = new AI(logicManager);
     }
     private void addPawns() {
         Pawn newPawn;
