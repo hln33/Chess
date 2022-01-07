@@ -1,5 +1,4 @@
 package Board;
-import Board.AI.AI;
 import Board.Pieces.*;
 
 import javax.swing.*;
@@ -9,10 +8,10 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Objects;
 
 // TO-DO: (descending importance)
 // 1. clean up code
-// 2. add checkmate detectionN
 
 public class Board extends JPanel implements ActionListener {
     ArrayList<Piece> pieceList = new ArrayList<>();
@@ -24,13 +23,20 @@ public class Board extends JPanel implements ActionListener {
     boolean whiteTurn = true;
     boolean PVP;
     AI ai = new AI();
+    Chess logicManager;
 
-    private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     public void addPropertyChangeListener(PropertyChangeListener l) {
         pcs.addPropertyChangeListener(l);
     }
     public void removePropertyChangeListener(PropertyChangeListener l) {
         pcs.removePropertyChangeListener(l);
+    }
+    private void checkGameOver() {
+        String message = logicManager.checkGameConditions();
+        if (!Objects.equals(message, "")) {
+            pcs.firePropertyChange("GameOver", "", message);
+        }
     }
 
     // set up board
@@ -53,6 +59,7 @@ public class Board extends JPanel implements ActionListener {
             }
         }
         addPieces();
+        this.logicManager = new Chess(this);
     }
     private void addPawns() {
         Pawn newPawn;
@@ -139,24 +146,26 @@ public class Board extends JPanel implements ActionListener {
         addQueens();
         addKings();
     }
+    private void addPieceToGame(Piece newPiece) {
+        Tile tile = newPiece.getTile();
+        tile.setPiece(newPiece);
+        pieceList.add(newPiece);
+    }
 
     // getters and setters
     public Tile[][] getTiles() {
-        return tiles;
+        return this.tiles;
     }
-    public void setGameOver(String message) {
-        pcs.firePropertyChange("GameOver", "", message);
+    public ArrayList<Piece> getPieces() {
+        return this.pieceList;
+    }
+    public King[] getKings() {
+        return this.kings;
     }
 
     // add highlighting to represent valid moves
     private void addHighlighting(Piece selectedPiece) {
-        validMoves = selectedPiece.getAvailable_moves();
-
-        validMoves = removeCheckedMoves(selectedPiece);
-        if (detectCheck()) {
-            // remove all valid moves except those that would block a check
-            validMoves = blockCheckMoves(selectedPiece);
-        }
+        validMoves = logicManager.filterMoves(selectedPiece);
 
         for (Tile validMove : validMoves) {
             validMove.setBackground(Color.CYAN);
@@ -166,122 +175,6 @@ public class Board extends JPanel implements ActionListener {
         for (Tile validMove : validMoves) {
             validMove.setBackground(validMove.getColor());
         }
-    }
-
-    // removes any moves from the valid move list that would cause a king to go checked
-    private ArrayList<Tile> removeCheckedMoves(Piece selectedPiece) {
-        ArrayList<Tile> newMoves = selectedPiece.getAvailable_moves();
-
-        if (selectedPiece instanceof King) {
-            for (Tile move : selectedPiece.getAvailable_moves()) {
-                for (Piece piece : pieceList) {
-                    if (piece == selectedPiece || piece.getColor() == selectedPiece.getColor()) continue;
-
-                    if (piece instanceof Pawn) {
-                        if (((Pawn)piece).getEliminating_moves().contains(move)) newMoves.remove(move);
-                    }
-                    else if (piece.getAvailable_moves().contains(move)) {
-                        newMoves.remove(move);
-                    }
-                }
-            }
-            return newMoves;
-        }
-
-        Tile position = selectedPiece.getTile();
-        position.removePiece();
-        if (detectCheck()) newMoves.clear();
-        position.setPiece(selectedPiece);
-        return newMoves;
-    }
-    // returns list of tiles that would block a check (will only be called if a game is in checked state)
-    private ArrayList<Tile> blockCheckMoves(Piece selectedPiece) {
-        Tile originalTile = selectedPiece.getTile();
-        ArrayList<Tile> blockingMoves = new ArrayList<>();
-
-        // put piece on a valid tile then check if it blocked a check
-        for (Tile move : selectedPiece.getAvailable_moves()) {
-            selectedPiece.setTile(move);
-
-            // check if the move tile is occupied
-            Piece enemyPiece = move.getPiece();
-            if (enemyPiece != null) pieceList.remove(enemyPiece);
-
-            // check if moving the piece blocks a check
-            originalTile.setPiece(null);
-            move.setPiece(selectedPiece);
-            if (!detectCheck()) blockingMoves.add(move);
-            originalTile.setPiece(selectedPiece);
-            move.setPiece(enemyPiece);
-
-            if (enemyPiece != null) pieceList.add(enemyPiece);
-            selectedPiece.setTile(originalTile);
-        }
-        return blockingMoves;
-    }
-
-    // detect if a king has been checked
-    private boolean detectCheck() {
-        for (King king : kings) {
-            Tile kingTile = king.getTile();
-
-            for (Piece piece : pieceList) {
-                if (piece instanceof King || piece.getColor() == king.getColor()) continue;
-                if (piece.getAvailable_moves().contains(kingTile)) {
-                    king.setChecked(true);
-                    return true;
-                }
-            }
-        }
-
-        // if we made it here then no kings are checked
-        for (King king : kings) {
-            king.setChecked(false);
-        }
-        return false;
-    }
-    private void detectCheckmate() {
-        for (King king : kings) {
-            if (king.Checked() && blockCheckMoves(king).isEmpty()) {
-                boolean whiteWins = king.getColor() == piece_color.black;
-                String gameOverMessage = whiteWins ? "WHITE WINS" : "BLACK WINS";
-                setGameOver(gameOverMessage);
-            }
-        }
-    }
-    private void checkGameConditions() {
-        detectCheck();
-        markChecked();
-        detectCheckmate();
-    }
-    // if a king is checked then color its tile RED, O.W original color
-    private void markChecked() {
-        for (King king : kings) {
-            Tile kingTile = king.getTile();
-            Color highlighting = king.Checked() ? Color.RED : kingTile.getColor();
-
-            kingTile.setBackground(highlighting);
-        }
-    }
-
-    private void movePiece(Tile clickedTile, Tile previousTile ) {
-        Piece selectedPiece = previousTile.getPiece();
-        selectedPiece.setTile(clickedTile);
-
-        if (clickedTile.getPiece() != null) removePieceFromGame(clickedTile);
-        clickedTile.setPiece(selectedPiece);
-
-        previousTile.removePiece();
-        previousTile.setBackground(previousTile.getColor());
-    }
-    private void removePieceFromGame(Tile chosenTile) {
-        Piece eliminatedPiece = chosenTile.getPiece();
-        pieceList.remove(eliminatedPiece);
-    }
-    private void addPieceToGame(Piece newPiece) {
-        Tile tile = newPiece.getTile();
-        tile.setPiece(newPiece);
-        pieceList.add(newPiece);
     }
 
     // handle user input
@@ -306,13 +199,13 @@ public class Board extends JPanel implements ActionListener {
         else if (selected) {
             // move piece to tile if clicked tile was a valid move
             if (validMoves.contains(clickedTile)) {
-                movePiece(clickedTile, selectedTile);
-                checkGameConditions();
+                logicManager.movePiece(clickedTile, selectedTile);
+                checkGameOver();
                 whiteTurn = !whiteTurn;
                 // if AI is enabled then computer will make a move
                 if (!PVP) {
                     ComputerMove();
-                    checkGameConditions();
+                    checkGameOver();
                     whiteTurn = !whiteTurn;
                 }
             }
@@ -334,6 +227,6 @@ public class Board extends JPanel implements ActionListener {
         Tile curr = pAm.piece.getTile();
         Tile randomMove = pAm.move;
 
-        movePiece(randomMove, curr);
+        logicManager.movePiece(randomMove, curr);
     }
 }

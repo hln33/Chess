@@ -1,8 +1,6 @@
-package Board.AI;
+package Board;
 
-import Board.Board;
 import Board.Pieces.Piece;
-import Board.Tile;
 
 import java.util.ArrayList;
 import java.util.Random;
