@@ -5,6 +5,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 public class Game {
+    private static final Title title = new Title();
+
     private static class Title extends JPanel {
         JLabel label = new JLabel();
 
@@ -19,6 +21,20 @@ public class Game {
             setBackground(Color.BLACK);
             add(label);
         }
+
+        private void setTitle(String newTitle) {
+            label.setText(newTitle);
+        }
+    }
+
+    private static class GameOverListener implements PropertyChangeListener {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            if ("GameOver".equals(evt.getPropertyName())) {
+                System.out.println(evt.getNewValue());
+                title.setTitle((String)evt.getNewValue());
+            }
+        }
     }
 
     Game() {
@@ -30,17 +46,8 @@ public class Game {
         frame.setSize(2000, 2000);
         frame.setLayout(new BorderLayout());
 
-        frame.add(new Title(), BorderLayout.NORTH);
+        frame.add(title, BorderLayout.NORTH);
         frame.add(board);
         frame.setVisible(true);
-    }
-
-    private static class GameOverListener implements PropertyChangeListener {
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-            if ("GameOver".equals(evt.getPropertyName())) {
-                System.out.println(evt.getNewValue());
-            }
-        }
     }
 }
