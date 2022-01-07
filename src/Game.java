@@ -7,7 +7,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Objects;
 
-public class Game implements ActionListener {
+public class Game {
     private static class Title extends JPanel {
         JLabel label = new JLabel();
 
@@ -27,23 +27,35 @@ public class Game implements ActionListener {
             label.setText(newTitle);
         }
     }
-    private static class Start extends JPanel {
-        JButton onePlayer = new JButton();
-        JButton twoPlayer = new JButton();
+    private static class Start extends JPanel implements ActionListener{
+        Start() {
+            JButton onePlayer = new JButton();
+            JButton twoPlayer = new JButton();
 
-        Start(Game game) {
             onePlayer.setText("One Player");
-            onePlayer.addActionListener(game);
+            onePlayer.addActionListener(this);
             twoPlayer.setText("Two Player");
-            twoPlayer.addActionListener(game);
+            twoPlayer.addActionListener(this);
 
             add(onePlayer);
             add(twoPlayer);
 
             setBounds(500, 150, 500, 500);
         }
-    }
 
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JButton clickedButton = (JButton)e.getSource();
+            Board board = new Board();
+            board.addPropertyChangeListener(new GameOverListener());
+
+            boolean PVP = Objects.equals(clickedButton.getText(), "Two Player");
+            frame.remove(this);
+            frame.add(title, BorderLayout.NORTH);
+            frame.add(board);
+            frame.setVisible(true);
+        }
+    }
     private static class GameOverListener implements PropertyChangeListener {
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
@@ -54,27 +66,17 @@ public class Game implements ActionListener {
         }
     }
 
+
     private static final Title title = new Title();
-    private final Start start = new Start(this);
-    private final JFrame frame = new JFrame();
+    private static final JFrame frame = new JFrame();
     Game() {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(2000, 2000);
         frame.setLayout(new BorderLayout());
         frame.setVisible(true);
+
+        Start start = new Start();
         frame.add(start);
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        JButton clickedButton = (JButton)e.getSource();
-        Board board = new Board();
-        board.addPropertyChangeListener(new GameOverListener());
-
-        boolean PVP = Objects.equals(clickedButton.getText(), "Two Player");
-        frame.remove(start);
-        frame.add(title, BorderLayout.NORTH);
-        frame.add(board);
-        frame.setVisible(true);
-    }
 }
