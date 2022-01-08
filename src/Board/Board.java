@@ -61,7 +61,7 @@ public class Board extends JPanel implements ActionListener {
         }
         addPieces();
         this.logicManager = new Chess(this);
-        this.ai = new AI(logicManager);
+        this.ai = new AI(logicManager, this);
     }
     private void addPawns() {
         Pawn newPawn;
@@ -179,6 +179,19 @@ public class Board extends JPanel implements ActionListener {
         }
     }
 
+    private void ComputerMove() {
+        ArrayList<Piece> blackPieces = new ArrayList<>();
+        for (Piece piece : pieceList) {
+            if (piece.getColor() == piece_color.black) {
+                blackPieces.add(piece);
+            }
+        }
+        //ai.generateMove(blackPieces);
+        ai.generateMinimax();
+        checkGameOver();
+        whiteTurn = !whiteTurn;
+    }
+
     // handle user input
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -211,18 +224,5 @@ public class Board extends JPanel implements ActionListener {
             removeHighlighting();
             selected = false;
         }
-    }
-
-    // the AI needs to know when they are checked
-    private void ComputerMove() {
-        ArrayList<Piece> blackPieces = new ArrayList<>();
-        for (Piece piece : pieceList) {
-            if (piece.getColor() == piece_color.black) {
-                blackPieces.add(piece);
-            }
-        }
-        ai.generateMove(blackPieces);
-        checkGameOver();
-        whiteTurn = !whiteTurn;
     }
 }

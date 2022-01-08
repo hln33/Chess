@@ -27,8 +27,9 @@ public class Chess {
         previousTile.removePiece();
         previousTile.setBackground(previousTile.getColor());
     }
-    private void removePieceFromGame(Tile chosenTile) {
+    void removePieceFromGame(Tile chosenTile) {
         Piece eliminatedPiece = chosenTile.getPiece();
+        chosenTile.removePiece();
         Piece_List.remove(eliminatedPiece);
     }
 
