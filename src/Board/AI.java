@@ -1,6 +1,5 @@
 package Board;
 
-import Board.Pieces.King;
 import Board.Pieces.Piece;
 
 import java.util.ArrayList;
@@ -16,17 +15,7 @@ public class AI {
         System.out.println("AI init");
     }
 
-    public class PieceAndMove {
-        public Piece piece;
-        public Tile move;
-
-        PieceAndMove(Piece piece, Tile move) {
-            this.piece = piece;
-            this.move = move;
-        }
-    }
-
-    public PieceAndMove getMove(ArrayList<Piece> pieces) {
+    public void generateMove(ArrayList<Piece> pieces) {
         this.pieces = pieces;
         Random rand = new Random();
         int n = rand.nextInt(pieces.size()-1);
@@ -42,6 +31,6 @@ public class AI {
 
         n = rand.nextInt(availableMoves.size());
         Tile randomMove = availableMoves.get(n);
-        return new PieceAndMove(randomPiece, randomMove);
+        logicManager.movePiece(randomMove, randomPiece.getTile());
     }
 }

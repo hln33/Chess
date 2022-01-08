@@ -221,11 +221,7 @@ public class Board extends JPanel implements ActionListener {
                 blackPieces.add(piece);
             }
         }
-        AI.PieceAndMove pAm = ai.getMove(blackPieces);
-        Tile curr = pAm.piece.getTile();
-        Tile randomMove = pAm.move;
-
-        logicManager.movePiece(randomMove, curr);
+        ai.generateMove(blackPieces);
         checkGameOver();
         whiteTurn = !whiteTurn;
     }
