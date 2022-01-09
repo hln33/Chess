@@ -14,9 +14,7 @@ import java.util.Objects;
 // 1. clean up code
 
 public class Board extends JPanel implements ActionListener {
-    ArrayList<Piece> pieceList = new ArrayList<>();
     ArrayList<Tile> validMoves = new ArrayList<>();
-    King[] kings = new King[2];
     Tile[][] tiles = new Tile[8][8];
     Tile selectedTile;
     boolean selected = false;
@@ -59,7 +57,7 @@ public class Board extends JPanel implements ActionListener {
                 add(tiles[row][col], constraints);
             }
         }
-        this.logicManager = new Chess(this);
+        this.logicManager = new Chess();
         this.ai = new AI(logicManager, this);
         addPieces();
     }
@@ -132,12 +130,10 @@ public class Board extends JPanel implements ActionListener {
         King newKing;
         // black king
         newKing = new King(this, tiles[0][3], piece_color.black);
-        kings[1] = newKing;
         logicManager.addPieceToGame(newKing);
 
         // white king
         newKing = new King(this, tiles[7][3], piece_color.white);
-        kings[0] = newKing;
         logicManager.addPieceToGame(newKing);
     }
     private void addPieces() {
@@ -152,9 +148,6 @@ public class Board extends JPanel implements ActionListener {
     // getters and setters
     public Tile[][] getTiles() {
         return this.tiles;
-    }
-    public King[] getKings() {
-        return this.kings;
     }
 
     // add highlighting to represent valid moves

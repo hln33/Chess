@@ -9,11 +9,10 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class Chess {
-    private final Board State;
     private final ArrayList<Piece> Piece_List;
+    private final ArrayList<King> kings = new ArrayList<>();
 
-    public Chess(Board state) {
-        this.State = state;
+    public Chess() {
         this.Piece_List = new ArrayList<>();
     }
 
@@ -31,6 +30,7 @@ public class Chess {
         Tile tile = newPiece.getTile();
         tile.setPiece(newPiece);
         Piece_List.add(newPiece);
+        if (newPiece instanceof King) kings.add((King) newPiece);
     }
     public void removePieceFromGame(Tile chosenTile) {
         Piece eliminatedPiece = chosenTile.getPiece();
@@ -103,8 +103,6 @@ public class Chess {
     }
     // detect if a king has been checked
     private boolean detectCheck() {
-        King[] kings = this.State.getKings();
-
         for (King king : kings) {
             Tile kingTile = king.getTile();
 
@@ -125,8 +123,6 @@ public class Chess {
     }
     // if a king is checked then color its tile RED, O.W original color
     private void markChecked() {
-        King[] kings = this.State.getKings();
-
         for (King king : kings) {
             Tile kingTile = king.getTile();
             Color highlighting = king.Checked() ? Color.RED : kingTile.getColor();
@@ -135,15 +131,12 @@ public class Chess {
         }
     }
     private String detectCheckmate() {
-        King[] kings = this.State.getKings();
-
         for (King king : kings) {
             if (king.Checked() && blockCheckMoves(king).isEmpty()) {
                 boolean whiteWins = king.getColor() == piece_color.black;
                 return whiteWins ? "WHITE WINS" : "BLACK WINS";
             }
         }
-
         return "";
     }
 }
