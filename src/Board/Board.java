@@ -167,7 +167,9 @@ public class Board extends JPanel implements ActionListener {
     }
 
     private void ComputerMove() {
+        removeHighlighting();
         ai.generateMinimax();
+        logicManager.markChecked();
         checkGameOver();
         whiteTurn = !whiteTurn;
     }
@@ -195,6 +197,7 @@ public class Board extends JPanel implements ActionListener {
             // move piece to tile if clicked tile was a valid move
             if (validMoves.contains(clickedTile)) {
                 logicManager.movePiece(clickedTile, selectedTile);
+                logicManager.markChecked();
                 checkGameOver();
                 whiteTurn = !whiteTurn;
                 // if AI is enabled then computer will make a move

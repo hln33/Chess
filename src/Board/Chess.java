@@ -16,6 +16,10 @@ public class Chess {
         this.Piece_List = new ArrayList<>();
     }
 
+    public ArrayList<Piece> getPieces() {
+        return this.Piece_List;
+    }
+
     public void movePiece(Tile clickedTile, Tile previousTile ) {
         Piece selectedPiece = previousTile.getPiece();
         selectedPiece.setTile(clickedTile);
@@ -36,9 +40,6 @@ public class Chess {
         Piece eliminatedPiece = chosenTile.getPiece();
         chosenTile.removePiece();
         Piece_List.remove(eliminatedPiece);
-    }
-    public ArrayList<Piece> getPieces() {
-        return this.Piece_List;
     }
 
     public ArrayList<Tile> filterMoves(Piece selectedPiece) {
@@ -98,7 +99,6 @@ public class Chess {
 
     public String checkGameConditions() {
         detectCheck();
-        markChecked();
         return detectCheckmate();
     }
     // detect if a king has been checked
@@ -122,7 +122,7 @@ public class Chess {
         return false;
     }
     // if a king is checked then color its tile RED, O.W original color
-    private void markChecked() {
+    public void markChecked() {
         for (King king : kings) {
             Tile kingTile = king.getTile();
             Color highlighting = king.Checked() ? Color.RED : kingTile.getColor();
