@@ -169,8 +169,8 @@ public class Board extends JPanel implements ActionListener {
     private void ComputerMove() {
         removeHighlighting();
         ai.generateMinimax();
-        logicManager.markChecked();
         checkGameOver();
+        logicManager.markChecked();
         whiteTurn = !whiteTurn;
     }
 

@@ -34,13 +34,13 @@ public class AI {
         return whitePieces;
     }
 
-    private int evaluatePosition(Board position) {
+    private int evaluatePosition() {
         ArrayList<Piece> pieces = logicManager.getPieces();
         int value = 0;
         for (Piece piece : pieces) {
             value += getPieceValue(piece);
         }
-        System.out.println(value);
+        System.out.println(logicManager.getPieces().size());
         return value;
     }
     private int getPieceValue(Piece piece) {
@@ -76,65 +76,58 @@ public class AI {
         for (Piece piece : black) {
             Tile originalTile = piece.getTile();
             for (Tile move : logicManager.filterMoves(piece)) {
-                // perform move
                 Piece enemyPiece = move.getPiece();
                 performMove(originalTile, move, piece, enemyPiece);
-
-                // recursive call
-                int res = minimax(state, depth, true);
+                int res = minimax(depth, Integer.MIN_VALUE, Integer.MAX_VALUE, true);
                 //System.out.println(res);
-
-                // undo
                 undoMove(originalTile, move, piece, enemyPiece);
                 results.add(new PieceAndMove(piece, move, res));
             }
         }
         return  results;
     }
-    private int minimax(Board position, int depth, boolean maximizingPlayer) {
+    private int minimax(int depth, int alpha, int beta, boolean maximizingPlayer) {
         if (depth == 0 || !Objects.equals(logicManager.checkGameConditions(), "")) {
             // return evaluation of position
-            return evaluatePosition(position);
+            return evaluatePosition();
         }
 
         ArrayList<Piece> pieceList = logicManager.getPieces();
         if (maximizingPlayer) {
             int maxEval = Integer.MIN_VALUE;
+            outer:
             for (Piece piece : getBlackPieces(pieceList)) {
                 // perform move
                 Tile originalTile = piece.getTile();
                 ArrayList<Tile> moves = logicManager.filterMoves(piece);
                 for (Tile move : moves) {
-                    // perform move
                     Piece enemyPiece = move.getPiece();
                     performMove(originalTile, move, piece, enemyPiece);
-
-                    // recursive call
-                    int eval = minimax(position, depth-1, false);
-                    maxEval = Math.max(maxEval, eval);
-
-                    // undo
+                    int eval = minimax(depth-1, alpha, beta, false);
                     undoMove(originalTile, move, piece, enemyPiece);
+
+                    maxEval = Math.max(maxEval, eval);
+                    alpha = Math.max(alpha, maxEval);
+                    if (beta <= alpha) break outer;
                 }
             }
             return maxEval;
         }
         else {
             int minEval = Integer.MAX_VALUE;
+            outer:
             for (Piece piece : getWhitePieces(pieceList)) {
                 Tile originalTile = piece.getTile();
                 ArrayList<Tile> moves = logicManager.filterMoves(piece);
                 for (Tile move : moves) {
-                    // perform move
                     Piece enemyPiece = move.getPiece();
                     performMove(originalTile, move, piece, enemyPiece);
-
-                    // recursive call
-                    int eval = minimax(position, depth-1, false);
-                    minEval = Math.min(minEval, eval);
-
-                    // undo
+                    int eval = minimax(depth-1, alpha, beta, false);
                     undoMove(originalTile, move, piece, enemyPiece);
+
+                    minEval = Math.min(minEval, eval);
+                    beta = Math.min(beta, minEval);
+                    if (beta <= alpha) break outer;
                 }
 
             }
@@ -166,7 +159,7 @@ public class AI {
         }
     }
     public void generateMinimax() {
-        ArrayList<PieceAndMove> results = minimaxRoot(4);
+        ArrayList<PieceAndMove> results = minimaxRoot(3);
 
         // select largest value
         PieceAndMove max = new PieceAndMove(null, null, 0);
