@@ -59,86 +59,86 @@ public class Board extends JPanel implements ActionListener {
                 add(tiles[row][col], constraints);
             }
         }
-        addPieces();
         this.logicManager = new Chess(this);
         this.ai = new AI(logicManager, this);
+        addPieces();
     }
     private void addPawns() {
         Pawn newPawn;
         // black pawns
         for (int col = 0; col < 8; ++col) {
             newPawn = new Pawn(this, tiles[1][col], piece_color.black);
-            addPieceToGame(newPawn);
+            logicManager.addPieceToGame(newPawn);
         }
         // white pawns
         for (int col = 0; col < 8; ++col) {
             newPawn = new Pawn(this, tiles[6][col], piece_color.white);
-            addPieceToGame(newPawn);
+            logicManager.addPieceToGame(newPawn);
         }
     }
     private void addRooks() {
         Rook newRook;
         // black rooks
         newRook = new Rook(this, tiles[0][0], piece_color.black);
-        addPieceToGame(newRook);
+        logicManager.addPieceToGame(newRook);
         newRook = new Rook(this, tiles[0][7], piece_color.black);
-        addPieceToGame(newRook);
+        logicManager.addPieceToGame(newRook);
 
         // white rooks
         newRook = new Rook(this, tiles[7][0], piece_color.white);
-        addPieceToGame(newRook);
+        logicManager.addPieceToGame(newRook);
         newRook = new Rook(this, tiles[7][7], piece_color.white);
-        addPieceToGame(newRook);
+        logicManager.addPieceToGame(newRook);
     }
     private void addKnights() {
         Knight newKnight;
         // black knights
         newKnight = new Knight(this, tiles[0][1], piece_color.black);
-        addPieceToGame(newKnight);
+        logicManager.addPieceToGame(newKnight);
         newKnight = new Knight(this, tiles[0][6], piece_color.black);
-        addPieceToGame(newKnight);
+        logicManager.addPieceToGame(newKnight);
 
         // white knights
         newKnight = new Knight(this, tiles[7][1], piece_color.white);
-        addPieceToGame(newKnight);
+        logicManager.addPieceToGame(newKnight);
         newKnight = new Knight(this, tiles[7][6], piece_color.white);
-        addPieceToGame(newKnight);
+        logicManager.addPieceToGame(newKnight);
     }
     private void addBishops() {
         Bishop newBishop;
         // black bishops
         newBishop = new Bishop(this, tiles[0][2], piece_color.black);
-        addPieceToGame(newBishop);
+        logicManager.addPieceToGame(newBishop);
         newBishop = new Bishop(this, tiles[0][5], piece_color.black);
-        addPieceToGame(newBishop);
+        logicManager.addPieceToGame(newBishop);
 
         // white bishops
         newBishop = new Bishop(this, tiles[7][2], piece_color.white);
-        addPieceToGame(newBishop);
+        logicManager.addPieceToGame(newBishop);
         newBishop = new Bishop(this, tiles[7][5], piece_color.white);
-        addPieceToGame(newBishop);
+        logicManager.addPieceToGame(newBishop);
     }
     private void addQueens() {
         Queen newQueen;
         // black queen
         newQueen = new Queen(this, tiles[0][4], piece_color.black);
-        addPieceToGame(newQueen);
+        logicManager.addPieceToGame(newQueen);
 
         // white queen
         newQueen = new Queen(this, tiles[7][4], piece_color.white);
-        addPieceToGame(newQueen);
+        logicManager.addPieceToGame(newQueen);
     }
     private void addKings() {
         King newKing;
         // black king
         newKing = new King(this, tiles[0][3], piece_color.black);
         kings[1] = newKing;
-        addPieceToGame(newKing);
+        logicManager.addPieceToGame(newKing);
 
         // white king
         newKing = new King(this, tiles[7][3], piece_color.white);
         kings[0] = newKing;
-        addPieceToGame(newKing);
+        logicManager.addPieceToGame(newKing);
     }
     private void addPieces() {
         addPawns();
@@ -148,18 +148,10 @@ public class Board extends JPanel implements ActionListener {
         addQueens();
         addKings();
     }
-    private void addPieceToGame(Piece newPiece) {
-        Tile tile = newPiece.getTile();
-        tile.setPiece(newPiece);
-        pieceList.add(newPiece);
-    }
 
     // getters and setters
     public Tile[][] getTiles() {
         return this.tiles;
-    }
-    public ArrayList<Piece> getPieces() {
-        return this.pieceList;
     }
     public King[] getKings() {
         return this.kings;

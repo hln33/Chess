@@ -14,7 +14,7 @@ public class Chess {
 
     public Chess(Board state) {
         this.State = state;
-        this.Piece_List = state.getPieces();
+        this.Piece_List = new ArrayList<>();
     }
 
     public void movePiece(Tile clickedTile, Tile previousTile ) {
@@ -27,10 +27,18 @@ public class Chess {
         previousTile.removePiece();
         previousTile.setBackground(previousTile.getColor());
     }
-    void removePieceFromGame(Tile chosenTile) {
+    public void addPieceToGame(Piece newPiece) {
+        Tile tile = newPiece.getTile();
+        tile.setPiece(newPiece);
+        Piece_List.add(newPiece);
+    }
+    public void removePieceFromGame(Tile chosenTile) {
         Piece eliminatedPiece = chosenTile.getPiece();
         chosenTile.removePiece();
         Piece_List.remove(eliminatedPiece);
+    }
+    public ArrayList<Piece> getPieces() {
+        return this.Piece_List;
     }
 
     public ArrayList<Tile> filterMoves(Piece selectedPiece) {
