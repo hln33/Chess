@@ -174,19 +174,14 @@ public class Board extends JPanel implements ActionListener {
         }
     }
     private void removeHighlighting() {
-        for (Tile validMove : validMoves) {
-            validMove.setBackground(validMove.getColor());
+        for (int row = 0; row < 8; ++row) {
+            for (int col = 0; col < 8; ++col) {
+                tiles[row][col].setBackground(tiles[row][col].getColor());
+            }
         }
     }
 
     private void ComputerMove() {
-        ArrayList<Piece> blackPieces = new ArrayList<>();
-        for (Piece piece : pieceList) {
-            if (piece.getColor() == piece_color.black) {
-                blackPieces.add(piece);
-            }
-        }
-        //ai.generateMove(blackPieces);
         ai.generateMinimax();
         checkGameOver();
         whiteTurn = !whiteTurn;

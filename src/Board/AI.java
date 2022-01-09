@@ -19,25 +19,21 @@ public class AI {
 
     private ArrayList<Piece> getBlackPieces(ArrayList<Piece> pieces) {
         ArrayList<Piece> blackPieces = new ArrayList<>();
-
         for (Piece piece : pieces) {
             if (piece.getColor() == piece_color.black) {
                 blackPieces.add(piece);
             }
         }
-
         return blackPieces;
     }
 
     private ArrayList<Piece> getWhitePieces(ArrayList<Piece> pieces) {
         ArrayList<Piece> whitePieces = new ArrayList<>();
-
         for (Piece piece : pieces) {
             if (piece.getColor() == piece_color.white) {
                 whitePieces.add(piece);
             }
         }
-
         return whitePieces;
     }
 
@@ -49,6 +45,34 @@ public class AI {
         return black.size() - white.size();
     }
 
+    private ArrayList<PieceAndMove> minimaxRoot(int depth) {
+        ArrayList<PieceAndMove> results = new ArrayList<>();
+        ArrayList<Piece> black = getBlackPieces(state.getPieces());
+
+        // run each valid move through minimax
+        for (Piece piece : black) {
+            Tile originalTile = piece.getTile();
+            for (Tile move : logicManager.filterMoves(piece)) {
+                Piece enemyPiece = move.getPiece();
+                if (enemyPiece != null) state.getPieces().remove(enemyPiece);
+                piece.setTile(move);
+                originalTile.setPiece(null);
+                move.setPiece(piece);
+
+                int res = minimax(state, depth, true);
+                System.out.println(res);
+
+                originalTile.setPiece(piece);
+                move.setPiece(enemyPiece);
+                piece.setTile(originalTile);
+                if (enemyPiece != null) state.getPieces().add(enemyPiece);
+
+                results.add(new PieceAndMove(piece, move, res));
+            }
+        }
+
+        return  results;
+    }
     private int minimax(Board position, int depth, boolean maximizingPlayer) {
         if (depth == 0 || !Objects.equals(logicManager.checkGameConditions(), "")) {
             // return evaluation of position
@@ -64,11 +88,9 @@ public class AI {
                 Tile originalTile = piece.getTile();
                 ArrayList<Tile> moves = boardManager.filterMoves(piece);
                 for (Tile move : moves) {
-                    piece.setTile(move);
-
                     Piece enemyPiece = move.getPiece();
                     if (enemyPiece != null) state.getPieces().remove(enemyPiece);
-
+                    piece.setTile(move);
                     originalTile.setPiece(null);
                     move.setPiece(piece);
 
@@ -78,9 +100,8 @@ public class AI {
 
                     originalTile.setPiece(piece);
                     move.setPiece(enemyPiece);
-
-                    if (enemyPiece != null) state.getPieces().add(enemyPiece);
                     piece.setTile(originalTile);
+                    if (enemyPiece != null) state.getPieces().add(enemyPiece);
                 }
             }
             return maxEval;
@@ -93,11 +114,9 @@ public class AI {
                 Tile originalTile = piece.getTile();
                 ArrayList<Tile> moves = boardManager.filterMoves(piece);
                 for (Tile move : moves) {
-                    piece.setTile(move);
-
                     Piece enemyPiece = move.getPiece();
                     if (enemyPiece != null) state.getPieces().remove(enemyPiece);
-
+                    piece.setTile(move);
                     originalTile.setPiece(null);
                     move.setPiece(piece);
 
@@ -107,32 +126,13 @@ public class AI {
 
                     originalTile.setPiece(piece);
                     move.setPiece(enemyPiece);
-
-                    if (enemyPiece != null) state.getPieces().add(enemyPiece);
                     piece.setTile(originalTile);
+                    if (enemyPiece != null) state.getPieces().add(enemyPiece);
                 }
 
             }
             return minEval;
         }
-    }
-
-    public void generateMove(ArrayList<Piece> pieces) {
-        Random rand = new Random();
-        int n = rand.nextInt(pieces.size()-1);
-        Piece randomPiece = pieces.get(n);
-        ArrayList<Tile> availableMoves = logicManager.filterMoves(randomPiece);
-
-        // keep searching until we find a piece that has moves
-        while (availableMoves.size() == 0) {
-            n = rand.nextInt(pieces.size());
-            randomPiece = pieces.get(n);
-            availableMoves = logicManager.filterMoves(randomPiece);
-        }
-
-        n = rand.nextInt(availableMoves.size());
-        Tile randomMove = availableMoves.get(n);
-        logicManager.movePiece(randomMove, randomPiece.getTile());
     }
 
     private static class PieceAndMove {
@@ -147,18 +147,7 @@ public class AI {
         }
     }
     public void generateMinimax() {
-        ArrayList<PieceAndMove> results = new ArrayList<>();
-
-        // get black pieces
-        ArrayList<Piece> black = getBlackPieces(state.getPieces());
-
-        // run each valid move through minimax
-        for (Piece piece : black) {
-            for (Tile move : logicManager.filterMoves(piece)) {
-                int res = minimax(state, 0, true);
-                results.add(new PieceAndMove(piece, move, res));
-            }
-        }
+        ArrayList<PieceAndMove> results = minimaxRoot(3);
 
         // select largest value
         PieceAndMove max = new PieceAndMove(null, null, 0);
